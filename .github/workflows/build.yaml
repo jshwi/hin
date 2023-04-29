@@ -1,0 +1,42 @@
+name: Build
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+jobs:
+  build:
+    name: ${{ matrix.os }}-python${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        python-version:
+          - "3.8"
+          - "3.9"
+          - "3.10"
+        os:
+          - ubuntu-latest
+    steps:
+      - name: Checkout build
+        id: checkout-build
+        uses: actions/checkout@v3
+      - name: Install Poetry
+        id: install-poetry
+        run: pipx install poetry
+      - name: Setup Python
+        id: setup-python
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: poetry
+      - name: Install Python Packages
+        id: install-python-packages
+        run: poetry install
+      - name: Audit
+        id: audit
+        run: poetry run pyaud audit
+      - name: Upload coverage
+        id: upload-coverage
+        uses: codecov/codecov-action@v3

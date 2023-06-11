@@ -1,6 +1,6 @@
 """
 hin._clone
-=============
+==========
 """
 from __future__ import annotations
 

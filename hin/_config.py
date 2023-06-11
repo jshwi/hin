@@ -1,6 +1,6 @@
 """
 hin._config
-==============
+===========
 """
 import os as _os
 import typing as _t

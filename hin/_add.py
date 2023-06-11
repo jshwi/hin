@@ -1,6 +1,6 @@
 """
 hin._add
-===========
+========
 """
 from rich.console import Console as _Console
 

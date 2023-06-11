@@ -1,6 +1,6 @@
 """
 hin._decorators
-==================
+===============
 """
 from __future__ import annotations
 

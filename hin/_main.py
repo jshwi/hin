@@ -1,6 +1,6 @@
 """
 hin._main
-============
+=========
 """
 # pylint: disable=no-value-for-parameter
 from __future__ import annotations

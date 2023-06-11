@@ -1,6 +1,6 @@
 """
 hin._status
-==============
+===========
 """
 from __future__ import annotations
 

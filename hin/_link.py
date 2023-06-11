@@ -1,6 +1,6 @@
 """
 hin._link
-============
+=========
 """
 from rich.console import Console as _Console
 

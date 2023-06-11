@@ -1,6 +1,6 @@
 """
 hin._remove
-==============
+===========
 """
 from rich.console import Console as _Console
 

@@ -9,6 +9,7 @@ ci:
     - vulture
     - tests
     - commit-policy
+    - change-logged
 default_language_version:
   python: python3.8
 default_stages:
@@ -82,11 +83,16 @@ repos:
         language: system
         always_run: true
         pass_filenames: false
-      # check .github/COMMIT_POLICY.md is up-to-date
+      # check ./.github/COMMIT_POLICY.md is up-to-date
       - id: commit-policy
         name: commit policy
         language: system
         entry: poetry run pyaud commit-policy
+        pass_filenames: false
+      - id: change-logged
+        name: change logged
+        language: system
+        entry: poetry run pyaud change-logged
         pass_filenames: false
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: "v4.4.0"
@@ -141,6 +147,7 @@ repos:
         args:
           - "--recursive"
           - "--wrap-summaries=72"
+          - "--in-place"
   - repo: https://github.com/pappasam/toml-sort
     rev: "v0.22.4"
     hooks:

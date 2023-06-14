@@ -40,7 +40,11 @@ def _print_paths(line: str, config: _Config) -> None:
         path_ref = _PathRef(_re.sub(" +", " ", line).strip())
         for existing in config.values():
             if path_ref.path.startswith(str(existing.value.relpath)):
-                print(path_ref.kind, existing.key.relpath)
+                path = str(path_ref.path)
+                if existing.isdotfile:
+                    path = f".{path}"
+
+                print(path_ref.kind, path)
 
 
 def _print_status(out: _Console, output: str, config: _Config) -> None:

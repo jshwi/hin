@@ -1339,3 +1339,42 @@ def test_link_not_to_symlink(
     assert str(P1.dst) in result.stdout
     assert "linked" in result.stdout
     assert str(P2.dst) in result.stdout
+
+
+def test_git_status_path(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:
+    """Test printing of full paths when checking status.
+
+    Make sure `hin status` prints
+
+    .. code-block:: shell
+
+        $ hin status
+        Changes not staged for commit:
+        modified: .test1/file_1.txt
+        modified: .test1/file_2.txt
+
+    and not
+
+    .. code-block:: shell
+
+        $ hin status
+        Changes not staged for commit:
+        modified: .test1
+        modified: .test1
+
+    :param cli: Cli runner for testing.
+    :param make_tree: Make file tree.
+    """
+    make_tree({P1.dst: {P2.src: P2.contents, P3.src: P3.contents}})
+    file_1 = P1.dst / P2.src
+    file_2 = P1.dst / P3.src
+    result = cli(
+        (d.main, [ADD, P1.dst]),
+        (d.main, [ADD, file_1]),
+        (d.main, [ADD, file_2]),
+    )
+    file_1.write_text("changed_1", encoding="utf-8")
+    file_2.write_text("changed_2", encoding="utf-8")
+    result = cli((d.main, [STATUS]))
+    assert str(file_1) in result.stdout
+    assert str(file_2) in result.stdout

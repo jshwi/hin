@@ -35,16 +35,20 @@ class _PathRef:
         return self._path
 
 
+def _print_paths(line: str, config: _Config) -> None:
+    if line.startswith("\t"):
+        path_ref = _PathRef(_re.sub(" +", " ", line).strip())
+        for existing in config.values():
+            if path_ref.path.startswith(str(existing.value.relpath)):
+                print(path_ref.kind, existing.key.relpath)
+
+
 def _print_status(out: _Console, output: str, config: _Config) -> None:
     for line in output.splitlines():
         if _re.match(r"((\w+(?: \w+)*):)", line):
             out.print(f"[green bold]{line}[/green bold]")
 
-        if line.startswith("\t"):
-            path_ref = _PathRef(_re.sub(" +", " ", line).strip())
-            for existing in config.values():
-                if path_ref.path.startswith(str(existing.value.relpath)):
-                    print(path_ref.kind, existing.key.relpath)
+        _print_paths(line, config)
 
 
 @_decorators.console

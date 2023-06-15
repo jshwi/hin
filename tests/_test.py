@@ -528,7 +528,7 @@ def test_add_dirty_working_tree(
 
 
 def test_install(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:
-    """Test install.
+    """Test installation.
 
     :param cli: Cli runner for testing.
     :param make_tree: Make file tree.
@@ -562,7 +562,7 @@ def test_install(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:
 
 @freeze_time(DATETIME)
 def test_install_backup(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:
-    """Test backing up of files when running install.
+    """Test backing up of files when running installation.
 
     :param cli: Cli runner for testing.
     :param make_tree: Make file tree.
@@ -653,7 +653,7 @@ def test_remove_with_links_to(
     link_condition: t.Callable[..., bool],
     file_condition: t.Callable[..., bool],
 ) -> None:
-    """Test removing of dotfile that has links to itself and so on..
+    """Test removing of dotfile that has links to itself and so on.
 
     :param cli: Cli runner for testing.
     :param make_tree: Make file tree.
@@ -733,7 +733,7 @@ def test_unlink(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:
 
 
 def test_uninstall(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:
-    """Test uninstall.
+    """Test uninstalling dotfiles.
 
     :param cli: Cli runner for testing.
     :param make_tree: Make file tree.
@@ -1092,7 +1092,7 @@ def test_install_cross_os(
     setup: t.Tuple[str, t.Dict[str, t.Any], Path],
     install: t.Tuple[str, Path],
 ) -> None:
-    """Check add and install cross platform.
+    """Check add and install cross-platform.
 
     :param monkeypatch: Mock patch environment and attributes.
     :param cli: Cli runner for testing.
@@ -1368,7 +1368,7 @@ def test_git_status_path(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:
     make_tree({P1.dst: {P2.src: P2.contents, P3.src: P3.contents}})
     file_1 = P1.dst / P2.src
     file_2 = P1.dst / P3.src
-    result = cli(
+    cli(
         (d.main, [ADD, P1.dst]),
         (d.main, [ADD, file_1]),
         (d.main, [ADD, file_2]),

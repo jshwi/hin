@@ -37,7 +37,7 @@ class _File(_ABC):
 class _Symlink(_File):
     def __init__(self, value: str | _Path) -> None:
         super().__init__(value)
-        self._str = str(_Path(_os.path.expandvars(value)).absolute())
+        self._str = str(_Path.home() / _Path(_os.path.expandvars(value)))
 
     def __repr__(self) -> str:
         return f"${self.env}/{self.relpath}"
@@ -82,7 +82,7 @@ class Matrix(_ABC):
         self._key = (
             _UserDataSymlink(key)
             if _e["USER_DATA_DIR"]
-            in str(_Path(_os.path.expandvars(key)).absolute())
+            in str(_Path.home() / _Path(_os.path.expandvars(key)))
             else _Symlink(key)
         )
         self._value: _File = _Dotfile(value)

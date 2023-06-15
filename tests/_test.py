@@ -1378,3 +1378,29 @@ def test_git_status_path(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:
     result = cli((d.main, [STATUS]))
     assert str(file_1) in result.stdout
     assert str(file_2) in result.stdout
+
+
+def test_git_commit_path_not_in_home(
+    monkeypatch: pytest.MonkeyPatch,
+    cli: FixtureCli,
+    make_tree: FixtureMakeTree,
+) -> None:
+    """Test committing of full path when in dir other than home.
+
+    Ensure below does not happen:
+    .. code-block:: shell
+
+        $ hin commit .ssh/known_hosts
+        nothing to commit
+
+    :param monkeypatch: Mock patch environment and attributes.
+    :param cli: Cli runner for testing.
+    :param make_tree: Make file tree.
+    """
+    make_tree({P1.dst: {P2.src: P2.contents, P3.src: P3.contents}, P2.dst: {}})
+    path = P1.dst / P2.src
+    cli((d.main, [ADD, P1.dst]), (d.main, [ADD, path]))
+    path.write_text("changed_1", encoding="utf-8")
+    monkeypatch.chdir(P2.dst)
+    result = cli((d.main, [COMMIT, path]))
+    assert "nothing to commit" not in result.stdout

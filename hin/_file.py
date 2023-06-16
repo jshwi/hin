@@ -146,10 +146,12 @@ class Matrix(_ABC):
         :param entry: Existing parent of child.
         :return: New child `Entry` object.
         """
-        return Entry(
-            entry.value.path,
-            self.value.path / _Path(*entry.key.relpath.parts[1:]),
-        )
+        relpath = _Path(_re.sub(r"^\.", "", str(entry.key.relpath)))
+        if len(relpath.parts) > 1:
+            while relpath.parts[0] != self.value.path.name:
+                relpath = _Path(*entry.key.relpath.parts[1:])
+
+        return Entry(entry.value.path, self.value.path.parent / relpath)
 
 
 class Entry(Matrix):

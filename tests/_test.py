@@ -1426,3 +1426,27 @@ def test_rename_timestamped_file(
     file_2_path = DOTFILES / file_2_relpath
     assert file_2_path.exists()
     git.Repo(DOTFILES).git.ls_files(file_2_relpath, error_unmatch=True)
+
+
+def test_add_nested(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:
+    """Test adding nested file.
+
+    No assertion needed. Testing that no error raised.
+
+    When writing this test:
+
+    .. code-block:: shell
+
+        $ hin add .config/nvim/
+        added /home/hin/.config/nvim
+        committed 44825c1
+        $ hin add .config/nvim/init.lua
+        FileNotFoundError: [Errno 2] No such file or directory: \n
+        '/home/hin/.local/share/hin/nvim/nvim/.gitignore'
+
+    :param cli: Cli runner for testing.
+    :param make_tree: Make file tree.
+    """
+    make_tree({P1.dst: {P2.src: {P3.src: P3.contents}}})
+    path = P1.dst / P2.src / P3.src
+    cli((d.main, [ADD, path.parent]), (d.main, [ADD, path]))

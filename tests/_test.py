@@ -42,6 +42,7 @@ from . import (
     REMOVE,
     SHARE,
     STATUS,
+    TIMESTAMP_HASH,
     UNDO,
     UNINSTALL,
     Command,
@@ -1404,3 +1405,24 @@ def test_git_commit_path_not_in_home(
     monkeypatch.chdir(P2.dst)
     result = cli((d.main, [COMMIT, path]))
     assert "nothing to commit" not in result.stdout
+
+
+@freeze_time(DATETIME)
+def test_rename_timestamped_file(
+    cli: FixtureCli, make_tree: FixtureMakeTree
+) -> None:
+    """Test file renamed on returning to its original parent.
+
+    :param cli: Cli runner for testing.
+    :param make_tree: Make file tree.
+    """
+    make_tree({P1.dst: {P3.src: P3.contents}, P2.dst: {P3.src: P3.contents}})
+    file_1 = P1.dst / P3.src
+    file_2 = P2.dst / P3.src
+    cli((d.main, [ADD, file_1]), (d.main, [ADD, file_2]))
+    assert (DOTFILES / f"{P3.src}.{TIMESTAMP_HASH}").exists()
+    cli((d.main, [ADD, file_2.parent]))
+    file_2_relpath = P2.src / P3.src
+    file_2_path = DOTFILES / file_2_relpath
+    assert file_2_path.exists()
+    git.Repo(DOTFILES).git.ls_files(file_2_relpath, error_unmatch=True)

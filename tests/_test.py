@@ -1198,12 +1198,12 @@ def test_git_status(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:
     """
     make_tree({P1.dst: {P2.src: P2.contents}})
     cli((d.main, [ADD, P1.dst]))
-    (P1.dst / GITIGNORE).unlink()
-    (P1.dst / P3.src).touch()
+    path = P1.dst / P3.src
+    path.touch()
+    cli((d.main, [ADD, path]))
+    path.write_text("change")
     result = cli((d.main, [STATUS, args.file, P1.dst]))
     assert "Changes not staged for commit" in result.stdout
-    assert "Untracked files" in result.stdout
-    assert ".file_1" in result.stdout
     assert ".file_1" in result.stdout
 
 

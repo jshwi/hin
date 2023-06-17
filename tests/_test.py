@@ -1486,3 +1486,23 @@ def test_git_nested_status(
     path.write_text(changed[1], encoding="utf-8")
     result = cli((d.main, [STATUS]))
     assert str(path) in result.stdout
+
+
+def test_git_commit_nested_with_other_dotfiles(
+    cli: FixtureCli, make_tree: FixtureMakeTree
+) -> None:
+    """Test committing of full path when other dotfiles added.
+
+    :param cli: Cli runner for testing.
+    :param make_tree: Make file tree.
+    """
+    make_tree({P1.dst: P1.contents, P2.dst: {P3.src: {P4.src: P4.contents}}})
+    path = P2.dst / P3.src / P4.src
+    cli(
+        (d.main, [ADD, P1.dst]),
+        (d.main, [ADD, path.parent]),
+        (d.main, [ADD, path]),
+    )
+    path.write_text(changed[1], encoding="utf-8")
+    result = cli((d.main, [COMMIT, path]))
+    assert NOTHING_TO_COMMIT not in result.stdout

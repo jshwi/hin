@@ -39,10 +39,10 @@ def commit(
             if entry.is_child_of(existing):
                 entry = existing.child(existing)
 
-            repo.git.restore("--source", "stash@{0}", "--", entry.value.path)
-            if repo.git.diff("HEAD", "--", entry.value.path):
-                repo.git.add(entry.value.path)
-                return f"update {entry.value.relpath}"
+        repo.git.restore("--source", "stash@{0}", "--", entry.value.path)
+        if repo.git.diff("HEAD", "--", entry.value.path):
+            repo.git.add(entry.value.path)
+            return f"update {entry.value.relpath}"
 
     except _git.GitCommandError:
         pass

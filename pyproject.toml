@@ -68,7 +68,7 @@ maintainers = [
 name = "hin"
 readme = "README.rst"
 repository = "https://github.com/jshwi/hin"
-version = "0.2.0"
+version = "0.2.1"
 
 [tool.poetry.dependencies]
 appdirs = "^1.4.4"

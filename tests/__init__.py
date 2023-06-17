@@ -42,7 +42,7 @@ REMOTE = "remote"
 PUSH = "push"
 STATUS = "status"
 COMMIT = "commit"
-TIMESTAMP_HASH = "887a76a3c70c4241bab77bda2fc71473"
+TIMESTAMP_HASH = "887a76a"
 NOTHING_TO_COMMIT = "nothing to commit"
 
 args = VarPrefix("--", "-")

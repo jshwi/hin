@@ -12,6 +12,7 @@ from pathlib import Path
 
 import git
 import pytest
+from configobj import ConfigObj
 from freezegun import freeze_time
 
 import hin as d
@@ -1523,3 +1524,40 @@ def test_commit_message_path(
         str(path)
         in git.Repo(DOTFILES).git.log("HEAD", format="%B", max_count=1).strip()
     )
+
+
+@freeze_time(DATETIME)
+def test_old_timestamped_file_compatible(
+    cli: FixtureCli, make_tree: FixtureMakeTree
+) -> None:
+    """Test file renamed on returning to its original parent.
+
+    Testing that old timestamped files will still be compatible with new
+    timestamps and that file can be updated to the new timestamp
+
+    :param cli: Cli runner for testing.
+    :param make_tree: Make file tree.
+    """
+    old_timestamp = "887a76a3c70c4241bab77bda2fc71473"
+    make_tree({P1.dst: {P3.src: P3.contents}, P2.dst: {P3.src: P3.contents}})
+    file_1 = P1.dst / P3.src
+    file_2_home = P2.dst / P3.src
+    file_2_old_hash = f"{file_2_home.name}.{old_timestamp}"
+    file_2_new_hash = f"{file_2_home.name}.{TIMESTAMP_HASH}"
+    cli((d.main, [ADD, file_1]), (d.main, [ADD, file_2_home]))
+    config = ConfigObj(str(DOTFILES / "dotfiles.ini"))
+    config[f"$HOME/{file_2_home}"] = f"$DOTFILES/{file_2_old_hash}"
+    config.write()
+    os.rename(DOTFILES / file_2_new_hash, DOTFILES / file_2_old_hash)
+    assert (DOTFILES / file_2_old_hash).exists()
+    file_2_home.unlink()
+    repo = git.Repo(DOTFILES)
+    repo.git.add(DOTFILES.absolute())
+    repo.git.commit(message="update hash")
+    cli((d.main, [INSTALL]))
+    cli(
+        (d.main, [ADD, file_2_home.parent]),
+        (d.main, [REMOVE, file_2_home.parent]),
+        (d.main, [ADD, file_2_home]),
+    )
+    assert (DOTFILES / file_2_new_hash).exists()

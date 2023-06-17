@@ -169,7 +169,7 @@ class Entry(Matrix):
                     "md5",
                     _datetime.now().strftime("%Y%m%d%H%M%S").encode("utf-8"),
                     usedforsecurity=False,
-                ).hexdigest(),
+                ).hexdigest()[:7],
             ),
         )
 

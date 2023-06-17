@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 [Unreleased](https://github.com/jshwi/hin/compare/v0.1.5...HEAD)
 ------------------------------------------------------------------------
 ### Changed
+- implement shorter timestamp hashes
 - change default commit message
 
 [0.1.5](https://github.com/jshwi/hin/releases/tag/v0.1.5) - 2023-06-17

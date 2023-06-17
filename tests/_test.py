@@ -1580,3 +1580,21 @@ def test_git_push_no_change(
     assert CHANGES_PUSHED_TO_REMOTE in str(result.stdout)
     result = cli((d.main, [PUSH]))
     assert "no changes to push to remote" in str(result.stdout)
+
+
+def test_git_push_no_change_remote_arg(
+    cli: FixtureCli, make_tree: FixtureMakeTree
+) -> None:
+    """Test pushing to a remote the same as local with remote arg.
+
+    :param cli: Cli runner for testing.
+    :param make_tree: Make file tree.
+    """
+    remote_path = Path.cwd() / ".." / REMOTE
+    git.Repo.init(remote_path, bare=True)
+    make_tree({P1.dst: {P2.src: P2.contents}})
+    cli((d.main, [ADD, P1.dst]))
+    result = cli((d.main, [PUSH, args.remote, remote_path]))
+    assert CHANGES_PUSHED_TO_REMOTE in str(result.stdout)
+    result = cli((d.main, [PUSH, args.remote, remote_path]))
+    assert "no changes to push to remote" in str(result.stdout)

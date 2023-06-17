@@ -44,6 +44,7 @@ STATUS = "status"
 COMMIT = "commit"
 TIMESTAMP_HASH = "887a76a"
 NOTHING_TO_COMMIT = "nothing to commit"
+CHANGES_PUSHED_TO_REMOTE = "changes pushed to remote"
 
 args = VarPrefix("--", "-")
 changed = VarSeq("changed")

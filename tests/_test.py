@@ -21,6 +21,7 @@ from . import (
     ADD,
     APPDIRS_SYSTEM,
     APPLICATION_SUPPORT,
+    CHANGES_PUSHED_TO_REMOTE,
     CODE,
     COMMIT,
     DARWIN,
@@ -1178,7 +1179,7 @@ def test_git_push_valid(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:
     make_tree({P1.dst: {P2.src: P2.contents}})
     cli((d.main, [ADD, P1.dst]))
     result = cli((d.main, [PUSH, args.remote, remote_path]))
-    assert "changes pushed to remote" in str(result.stdout)
+    assert CHANGES_PUSHED_TO_REMOTE in str(result.stdout)
 
 
 def test_git_push_invalid(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:

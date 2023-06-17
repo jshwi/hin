@@ -32,6 +32,7 @@ from . import (
     INSTALL,
     LIBRARY,
     LINK,
+    NOTHING_TO_COMMIT,
     P1,
     P2,
     P3,
@@ -1247,7 +1248,7 @@ def test_nothing_to_commit(
     make_tree({P1.dst: {P2.src: P2.contents}})
     cli((d.main, [ADD, P1.dst]))
     result = cli((d.main, [COMMIT, P1.dst]))
-    assert "nothing to commit" in result.stdout
+    assert NOTHING_TO_COMMIT in result.stdout
 
 
 def test_ref_key_in_path(
@@ -1405,7 +1406,7 @@ def test_git_commit_path_not_in_home(
     path.write_text(changed[1], encoding="utf-8")
     monkeypatch.chdir(P2.dst)
     result = cli((d.main, [COMMIT, path]))
-    assert "nothing to commit" not in result.stdout
+    assert NOTHING_TO_COMMIT not in result.stdout
 
 
 @freeze_time(DATETIME)

@@ -32,8 +32,11 @@ def push(out: _Console, remote: str | None, repo: _git.Repo) -> None:
         repo.git.remote("add", _ORIGIN, remote)
 
     try:
-        repo.git.push(_ORIGIN, "master", set_upstream=True)
-        out.print("[green bold]changes pushed to remote[/green bold]")
+        if "Your branch is up to date with" in repo.git.status():
+            out.print("no changes to push to remote")
+        else:
+            repo.git.push(_ORIGIN, "master", set_upstream=True)
+            out.print("[green bold]changes pushed to remote[/green bold]")
     except _git.GitCommandError as err:
         if "'origin' does not appear to be a git repository" in str(err):
             raise RuntimeError(

@@ -49,6 +49,7 @@ from . import (
     FixtureCli,
     FixtureMakeTree,
     args,
+    changed,
 )
 
 
@@ -1201,7 +1202,7 @@ def test_git_status(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:
     path = P1.dst / P3.src
     path.touch()
     cli((d.main, [ADD, path]))
-    path.write_text("change")
+    path.write_text(changed[0])
     result = cli((d.main, [STATUS, args.file, P1.dst]))
     assert "Changes not staged for commit" in result.stdout
     assert ".file_1" in result.stdout
@@ -1374,8 +1375,8 @@ def test_git_status_path(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:
         (d.main, [ADD, file_1]),
         (d.main, [ADD, file_2]),
     )
-    file_1.write_text("changed_1", encoding="utf-8")
-    file_2.write_text("changed_2", encoding="utf-8")
+    file_1.write_text(changed[1], encoding="utf-8")
+    file_2.write_text(changed[2], encoding="utf-8")
     result = cli((d.main, [STATUS]))
     assert str(file_1) in result.stdout
     assert str(file_2) in result.stdout
@@ -1401,7 +1402,7 @@ def test_git_commit_path_not_in_home(
     make_tree({P1.dst: {P2.src: P2.contents, P3.src: P3.contents}, P2.dst: {}})
     path = P1.dst / P2.src
     cli((d.main, [ADD, P1.dst]), (d.main, [ADD, path]))
-    path.write_text("changed_1", encoding="utf-8")
+    path.write_text(changed[1], encoding="utf-8")
     monkeypatch.chdir(P2.dst)
     result = cli((d.main, [COMMIT, path]))
     assert "nothing to commit" not in result.stdout

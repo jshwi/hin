@@ -45,6 +45,7 @@ COMMIT = "commit"
 TIMESTAMP_HASH = "887a76a3c70c4241bab77bda2fc71473"
 
 args = VarPrefix("--", "-")
+changed = VarSeq("changed")
 
 
 class FixtureMakeTree(t.Protocol):  # pylint: disable=too-few-public-methods

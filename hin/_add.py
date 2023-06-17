@@ -2,6 +2,8 @@
 hin._add
 ========
 """
+from pathlib import Path as _Path
+
 from rich.console import Console as _Console
 
 from . import _decorators
@@ -100,4 +102,4 @@ def add(config: _Config, out: _Console, file: str) -> str:
             raise err
 
     out.print(f"added {entry.key.path}")
-    return f"add {entry.key.path.name}"
+    return f"add {entry.key.path.relative_to(_Path.home())}"

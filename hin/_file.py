@@ -97,15 +97,6 @@ class Matrix(_ABC):
         """Path to the actual file or directory."""
         return self._value
 
-    @property
-    def isdotfile(self) -> bool:
-        """Boolean for whether file begins with a dot.
-
-        Some hidden files, such as ~/Library for OSX do not begin with a
-        dot.
-        """
-        return str(self._key.relpath).startswith(".")
-
     def is_child_of(self, other: Matrix) -> bool:
         """Check whether this is a child of a file matrix.
 

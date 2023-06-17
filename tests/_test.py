@@ -1451,3 +1451,37 @@ def test_add_nested(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:
     make_tree({P1.dst: {P2.src: {P3.src: P3.contents}}})
     path = P1.dst / P2.src / P3.src
     cli((d.main, [ADD, path.parent]), (d.main, [ADD, path]))
+
+
+def test_git_nested_status(
+    cli: FixtureCli, make_tree: FixtureMakeTree
+) -> None:
+    """Test checking status of nested file.
+
+    Make sure `hin status` prints
+
+    .. code-block:: shell
+
+        $ hin status
+        Changes not staged for commit:
+        modified: .test1/file.txt
+        modified: .test1/file2.txt
+
+    and not
+
+    .. code-block:: shell
+
+        $ hin status
+        Changes not staged for commit:
+        modified: .file.txt
+        modified: .file2.txt
+
+    :param cli: Cli runner for testing.
+    :param make_tree: Make file tree.
+    """
+    make_tree({P1.dst: {P2.src: {P3.src: P3.contents}}})
+    path = P1.dst / P2.src / P3.src
+    cli((d.main, [ADD, path.parent]), (d.main, [ADD, path]))
+    path.write_text(changed[1], encoding="utf-8")
+    result = cli((d.main, [STATUS]))
+    assert str(path) in result.stdout

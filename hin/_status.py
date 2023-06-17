@@ -30,21 +30,21 @@ class _PathRef:
         return self._kind
 
     @property
-    def path(self) -> str:
+    def path(self) -> _Path:
         """Changed path."""
-        return self._path
+        return _Path(self._path)
 
 
 def _print_paths(line: str, config: _Config) -> None:
     if line.startswith("\t"):
         path_ref = _PathRef(_re.sub(" +", " ", line).strip())
         for existing in config.values():
-            if path_ref.path.startswith(str(existing.value.relpath)):
-                path = str(path_ref.path)
-                if existing.isdotfile:
-                    path = f".{path}"
-
-                print(path_ref.kind, path)
+            if str(path_ref.path).startswith(str(existing.value.relpath)):
+                print(
+                    path_ref.kind,
+                    existing.key.relpath
+                    / str(_Path(*path_ref.path.parts[1:])),
+                )
 
 
 def _print_status(out: _Console, output: str, config: _Config) -> None:

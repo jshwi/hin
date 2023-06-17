@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 [Unreleased](https://github.com/jshwi/hin/compare/v0.1.3...HEAD)
 ------------------------------------------------------------------------
+### Fixed
+- print correct status for nested files
 
 [0.1.3](https://github.com/jshwi/hin/releases/tag/v0.1.3) - 2023-06-16
 ------------------------------------------------------------------------

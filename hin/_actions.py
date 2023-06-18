@@ -10,10 +10,10 @@ import typing as _t
 from abc import ABC as _ABC
 from abc import abstractmethod as _abstractmethod
 from os import environ as _e
-from pathlib import Path as _Path
 
 import git as _git
 
+from ._config import Data as _Data
 from ._file import Entry as _Entry
 from ._file import Matrix as _Matrix
 
@@ -25,7 +25,7 @@ class _ActionDict(_t.TypedDict):
     undo: bool
 
 
-class Hist(_t.Dict[str, _t.List[_ActionDict]]):
+class Hist(_Data[str, _t.List[_ActionDict]]):
     """History object.
 
     Dict like object which can serialise and write an `_Action` subclass
@@ -37,19 +37,14 @@ class Hist(_t.Dict[str, _t.List[_ActionDict]]):
 
     def __init__(self) -> None:
         self._actions = {i.__name__: i for i in _Action.__subclasses__()}
-        self._path = _Path(_e["DOTFILES"]) / "dotfiles.json"
+        super().__init__("dotfiles.json")
         if self.path.exists():
             try:
-                super().__init__(
+                self.update(
                     _json.loads(self._path.read_text(encoding="utf-8"))
                 )
             except _json.JSONDecodeError:
                 pass
-
-    @property
-    def path(self) -> _Path:
-        """Path to history file."""
-        return self._path
 
     def add(
         self, commit: str, instance: _Action, func: _t.Callable[..., None]

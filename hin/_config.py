@@ -12,22 +12,36 @@ from configobj import ConfigObj as _ConfigObj
 from ._file import Matrix as _Matrix
 from ._file import matrix as _matrix
 
+_KT = _t.TypeVar("_KT")
+_VT = _t.TypeVar("_VT")
 
-class Config(_t.Dict[str, _Matrix]):
+
+class Data(_t.Dict[_KT, _VT]):
+    """Parent class for persistent storage mappings.
+
+    :param name: Name of data file.
+    """
+
+    def __init__(self, name: str) -> None:
+        super().__init__()
+        self._path = _Path(_e["DOTFILES"]) / name
+
+    @property
+    def path(self) -> _Path:
+        """Path to config file."""
+        return self._path
+
+
+class Config(Data[str, _Matrix]):
     """Dotfiles config object.
 
     Stores a mapping of dotfiles and their respective pointers.
     """
 
     def __init__(self) -> None:
-        self._path = _Path(_e["DOTFILES"]) / "dotfiles.ini"
-        self._obj = _ConfigObj(str(self._path))
-        super().__init__({k: _matrix(k, v) for k, v in self._obj.items()})
-
-    @property
-    def path(self) -> _Path:
-        """Path to config file."""
-        return self._path
+        super().__init__("dotfiles.ini")
+        self._obj = _ConfigObj(str(self.path))
+        self.update(**{k: _matrix(k, v) for k, v in self._obj.items()})
 
     @staticmethod
     def _key_proxy(item: str) -> str:

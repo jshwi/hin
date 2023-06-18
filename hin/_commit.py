@@ -35,6 +35,9 @@ def commit(
     """
     try:
         entry = _Entry.new(file)
+        # add commit message here because key changes if `entry` is a
+        # child of an existing dotfile
+        commit_message = f"update {entry.key.relpath}"
         for existing in config.values():
             if entry.is_child_of(existing):
                 entry = existing.child(existing)
@@ -42,7 +45,7 @@ def commit(
         repo.git.restore("--source", "stash@{0}", "--", entry.value.path)
         if repo.git.diff("HEAD", "--", entry.value.path):
             repo.git.add(entry.value.path)
-            return f"update {entry.value.relpath}"
+            return commit_message
 
     except _git.GitCommandError:
         pass

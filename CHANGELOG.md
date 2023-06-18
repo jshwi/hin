@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 [Unreleased](https://github.com/jshwi/hin/compare/v0.2.1...HEAD)
 ------------------------------------------------------------------------
+### Changed
+- change default update commit message
 
 [0.2.1](https://github.com/jshwi/hin/releases/tag/v0.2.1) - 2023-06-17
 ------------------------------------------------------------------------

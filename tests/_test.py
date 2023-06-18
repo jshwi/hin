@@ -1598,3 +1598,22 @@ def test_git_push_no_change_remote_arg(
     assert CHANGES_PUSHED_TO_REMOTE in str(result.stdout)
     result = cli((d.main, [PUSH, args.remote, remote_path]))
     assert "no changes to push to remote" in str(result.stdout)
+
+
+def test_commit_update_message_path(
+    cli: FixtureCli, make_tree: FixtureMakeTree
+) -> None:
+    """Test correct commit message added on update commit.
+
+    :param cli: Cli runner for testing.
+    :param make_tree: Make file tree.
+    """
+    make_tree({P1.dst: {P2.src: P2.contents}})
+    path = P1.dst / P2.src
+    cli((d.main, [ADD, path]))
+    path.write_text(changed[1], encoding="utf-8")
+    cli((d.main, [COMMIT, path]))
+    assert (
+        str(path)
+        in git.Repo(DOTFILES).git.log("HEAD", format="%B", max_count=1).strip()
+    )

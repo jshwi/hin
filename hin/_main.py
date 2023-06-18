@@ -58,6 +58,7 @@ def cli() -> None:
     dotfiles = str(_Path(user_data_dir) / _NAME)
     _e["USER_DATA_DIR"] = user_data_dir
     _e["DOTFILES"] = _e.get("DOTFILES", dotfiles)
+    _e["HIN_DIR"] = str(_Path(_e["DOTFILES"]) / f".{_NAME}")
     _e["GIT_AUTHOR_NAME"] = str(gitconfig.get_value("user", "name", user))
     _e["GIT_AUTHOR_EMAIL"] = str(gitconfig.get_value("user", "email", email))
     # simplify error output when not debugging

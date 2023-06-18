@@ -8,6 +8,7 @@ from os import environ as _e
 from pathlib import Path as _Path
 
 from configobj import ConfigObj as _ConfigObj
+import git as _git
 
 from ._file import Matrix as _Matrix
 from ._file import matrix as _matrix
@@ -24,12 +25,22 @@ class Data(_t.Dict[_KT, _VT]):
 
     def __init__(self, name: str) -> None:
         super().__init__()
-        self._path = _Path(_e["DOTFILES"]) / name
+        self._path = _Path(_e["HIN_DIR"]) / name
+        self._path.mkdir(exist_ok=True, parents=True)
 
     @property
     def path(self) -> _Path:
         """Path to config file."""
         return self._path
+
+    def relocate(self) -> None:
+        old_path = _Path(_e["DOTFILES"]) / self._path.name
+        if old_path.is_file():
+            _os.rename(old_path, self.path)
+
+        repo = _git.Repo(_e["DOTFILES"])
+        repo.git.add(old_path, self.path)
+        repo.com
 
 
 class Config(Data[str, _Matrix]):

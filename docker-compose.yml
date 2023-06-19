@@ -1,10 +1,12 @@
 version: "3.8"
 
 services:
-  playground:
-    image: hin-playground
+  rust-playground:
+    image: hin-rust-playground
     build: .
     entrypoint: /opt/entrypoint
     command: tail -f /dev/null
     volumes:
-      - ./hin:/opt/hin/hin
+      - ./src:/opt/hin/src
+      - ./Cargo.toml:/opt/hin/Cargo.toml
+      - ./Cargo.lock:/opt/hin/Cargo.lock

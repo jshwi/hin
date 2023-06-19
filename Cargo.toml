@@ -1,0 +1,18 @@
+[dependencies]
+ansi_term = "0.12.1"
+chrono = "0.4.26"
+clap = {features = ["derive", "wrap_help"], version = "4.3.5"}
+color-eyre = "0.6.2"
+directories = "5.0.1"
+env_logger = "0.10.0"
+git2 = "0.17.2"
+home = "0.5.5"
+log = "0.4.19"
+relative-path = "1.8.0"
+rust-ini = "0.19.0"
+shellexpand = "3.1.0"
+
+[package]
+edition = "2021"
+name = "hin"
+version = "0.3.0"

@@ -17,8 +17,8 @@ from ._gitignore import Gitignore as _Gitignore
 def remove(config: _Config, out: _Console, file: str) -> str:
     """Remove FILE from version control.
 
-    All links that point to the file, and any links to those links,
-    will be removed.
+    All links that point to the file, and any links to those links, will
+    be removed.
 
     If the dotfile is not a link to another dotfile then the checked in
     file or directory will be moved back to its original location in its

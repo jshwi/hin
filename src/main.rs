@@ -1,7 +1,20 @@
 use clap::{Parser, Subcommand};
 
 fn main() {
-    let _args = Args::parse();
+    let args = Args::parse();
+    match args.command {
+        Command::Add {} => println!("running add"),
+        Command::Clone {} => println!("running clone"),
+        Command::Commit {} => println!("running commit"),
+        Command::Install {} => println!("running install"),
+        Command::Link {} => println!("running link"),
+        Command::List {} => println!("running list"),
+        Command::Push {} => println!("running push"),
+        Command::Remove {} => println!("running remove"),
+        Command::Status {} => println!("running status"),
+        Command::Undo {} => println!("running undo"),
+        Command::Uninstall {} => println!("running uninstall"),
+    }
 }
 
 /// Dotfile manager.

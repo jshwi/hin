@@ -3,17 +3,19 @@ use clap::{Parser, Subcommand};
 fn main() {
     let args = Args::parse();
     match args.command {
-        Command::Add {} => println!("running add"),
-        Command::Clone {} => println!("running clone"),
-        Command::Commit {} => println!("running commit"),
-        Command::Install {} => println!("running install"),
-        Command::Link {} => println!("running link"),
-        Command::List {} => println!("running list"),
-        Command::Push {} => println!("running push"),
-        Command::Remove {} => println!("running remove"),
-        Command::Status {} => println!("running status"),
-        Command::Undo {} => println!("running undo"),
-        Command::Uninstall {} => println!("running uninstall"),
+        Command::Add { file } => println!("added {}", file),
+        Command::Clone { url } => println!("cloning {}", url),
+        Command::Commit { file } => println!("committed {}", file),
+        Command::Install {} => println!("installing"),
+        Command::Link { link, target } => {
+            println!("linked {} to {}", link, target)
+        }
+        Command::List {} => println!("listed"),
+        Command::Push {} => println!("pushed"),
+        Command::Remove { file } => println!("removed {}", file),
+        Command::Status {} => println!("showed status"),
+        Command::Undo {} => println!("undone"),
+        Command::Uninstall {} => println!("uninstalled"),
     }
 }
 
@@ -45,11 +47,11 @@ enum Command {
     /// control under the source.
     ///
     /// Changes will be committed.
-    Add {},
+    Add { file: String },
     /// Clone a dotfile repository from a URL.
-    Clone {},
+    Clone { url: String },
     /// Commit changes to FILE.
-    Commit {},
+    Commit { file: String },
     /// Install a dotfile repository.
     ///
     /// Repository needs to contain a dotfiles.ini file consisting of
@@ -77,7 +79,7 @@ enum Command {
     /// system.
     ///
     /// Changes will be committed.
-    Link {},
+    Link { link: String, target: String },
     /// List all versioned dotfiles.
     List {},
     /// Push changes to remote.
@@ -92,7 +94,7 @@ enum Command {
     /// in its place.
     ///
     /// Changes will be committed.
-    Remove {},
+    Remove { file: String },
     /// Check version status.
     Status {},
     /// Revert previous commit and actions.

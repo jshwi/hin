@@ -1,10 +1,22 @@
 use clap::{Parser, Subcommand};
+use color_eyre::Result;
+use git2::Repository;
 
-fn main() {
+const DOTFILES: &str = "DOTFILES";
+
+fn main() -> Result<()> {
+    color_eyre::install()?;
+    let name: String = std::env::var("CARGO_PKG_NAME")?;
+    if std::env::var(DOTFILES).is_err() {
+        std::env::set_var(
+            DOTFILES,
+            directories::BaseDirs::new().unwrap().data_dir().join(name),
+        )
+    }
     let args = Args::parse();
     match args.command {
         Command::Add { file } => println!("added {}", file),
-        Command::Clone { url } => println!("cloning {}", url),
+        Command::Clone { url } => clone(&url).unwrap(),
         Command::Commit { file } => println!("committed {}", file),
         Command::Install {} => println!("installing"),
         Command::Link { link, target } => {
@@ -17,6 +29,7 @@ fn main() {
         Command::Undo {} => println!("undone"),
         Command::Uninstall {} => println!("uninstalled"),
     }
+    Ok(())
 }
 
 /// Dotfile manager.
@@ -104,4 +117,25 @@ enum Command {
     /// This will remove all symlinks pointing to the dotfile
     /// repository.
     Uninstall {},
+}
+
+fn clone(url: &str) -> Result<()> {
+    let dotfiles = &std::env::var("DOTFILES")?;
+    let path = std::path::Path::new(&dotfiles);
+    let repo_name = url
+        .split('/')
+        .collect::<Vec<&str>>()
+        .pop()
+        .unwrap()
+        .replace(".git", "");
+    println!("cloning '{}' into {}", repo_name, path.display());
+    match Repository::clone(url, path) {
+        Ok(repo) => repo,
+        Err(e) => panic!("failed to clone: {}", e),
+    };
+    println!(
+        "{}",
+        ansi_term::Color::Green.bold().paint("cloned dotfile repo")
+    );
+    Ok(())
 }

@@ -1,6 +1,9 @@
+use std::path::Path;
+
 use clap::{Parser, Subcommand};
 use color_eyre::Result;
 use git2::Repository;
+use ini::Ini;
 
 const DOTFILES: &str = "DOTFILES";
 
@@ -22,7 +25,7 @@ fn main() -> Result<()> {
         Command::Link { link, target } => {
             println!("linked {} to {}", link, target)
         }
-        Command::List {} => println!("listed"),
+        Command::List {} => list().unwrap(),
         Command::Push {} => println!("pushed"),
         Command::Remove { file } => println!("removed {}", file),
         Command::Status {} => println!("showed status"),
@@ -121,14 +124,14 @@ enum Command {
 
 fn clone(url: &str) -> Result<()> {
     let dotfiles = &std::env::var("DOTFILES")?;
-    let path = std::path::Path::new(&dotfiles);
+    let path = Path::new(&dotfiles);
     let repo_name = url
         .split('/')
         .collect::<Vec<&str>>()
         .pop()
         .unwrap()
         .replace(".git", "");
-    println!("cloning '{}' into {}", repo_name, path.display());
+    println!("cloning '{}' into {:?}", repo_name, path);
     match Repository::clone(url, path) {
         Ok(repo) => repo,
         Err(e) => panic!("failed to clone: {}", e),
@@ -137,5 +140,19 @@ fn clone(url: &str) -> Result<()> {
         "{}",
         ansi_term::Color::Green.bold().paint("cloned dotfile repo")
     );
+    Ok(())
+}
+
+
+fn list() -> Result<()> {
+    let dotfiles = &std::env::var("DOTFILES")?;
+    let path = Path::new(dotfiles).join("dotfiles.ini");
+    let config = Ini::load_from_file(path).unwrap();
+    for (_, prop) in &config {
+        for (key, value) in prop.iter() {
+            let kind = ansi_term::Color::Green.bold().paint("+");
+            println!("{} {:?}:{:?}", kind, key, value);
+        }
+    }
     Ok(())
 }

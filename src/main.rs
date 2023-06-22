@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::{borrow::Cow, env, path::Path};
 
 use clap::{Parser, Subcommand};
 use color_eyre::Result;
@@ -9,9 +9,9 @@ const DOTFILES: &str = "DOTFILES";
 
 fn main() -> Result<()> {
     color_eyre::install()?;
-    let name: String = std::env::var("CARGO_PKG_NAME")?;
-    if std::env::var(DOTFILES).is_err() {
-        std::env::set_var(
+    let name: String = env::var("CARGO_PKG_NAME")?;
+    if env::var(DOTFILES).is_err() {
+        env::set_var(
             DOTFILES,
             directories::BaseDirs::new().unwrap().data_dir().join(name),
         )
@@ -123,7 +123,7 @@ enum Command {
 }
 
 fn clone(url: &str) -> Result<()> {
-    let dotfiles = &std::env::var("DOTFILES")?;
+    let dotfiles = &env::var("DOTFILES")?;
     let path = Path::new(&dotfiles);
     let repo_name = url
         .split('/')
@@ -145,7 +145,7 @@ fn clone(url: &str) -> Result<()> {
 
 
 fn list() -> Result<()> {
-    let dotfiles = &std::env::var("DOTFILES")?;
+    let dotfiles = &env::var("DOTFILES")?;
     let path = Path::new(dotfiles).join("dotfiles.ini");
     let config = Ini::load_from_file(path).unwrap();
     for (_, prop) in &config {
@@ -155,4 +155,61 @@ fn list() -> Result<()> {
         }
     }
     Ok(())
+}
+
+
+fn _context(s: &str) -> Result<Option<Cow<'static, str>>, env::VarError> {
+    match env::var(s) {
+        Ok(value) => Ok(Some(value.into())),
+        Err(env::VarError::NotPresent) => Ok(Some("".into())),
+        Err(e) => Err(e),
+    }
+}
+
+
+trait FileABC {
+    fn name(&self) -> String;
+    fn env(&self) -> String;
+    fn root(&self) -> String;
+    fn relpath(&self) -> String {
+        self.name().replace(&self.root(), "")
+    }
+    fn path(&self) -> String {
+        format!("{}/{}", self.root(), self.relpath())
+    }
+}
+
+
+impl Symlink {
+    fn _new(name: String) -> Symlink {
+        Symlink {
+            name: shellexpand::env_with_context(&name, _context)
+                .unwrap()
+                .to_string(),
+        }
+    }
+}
+
+
+struct Symlink {
+    name: String,
+}
+
+
+impl FileABC for Symlink {
+    fn name(&self) -> String {
+        format!(
+            "{:?}/{}",
+            home::home_dir(),
+            shellexpand::env_with_context(&self.name, _context).unwrap()
+        )
+    }
+
+    fn env(&self) -> String {
+        "HOME".to_string()
+    }
+
+    fn root(&self) -> String {
+        env::var(self.env()).unwrap()
+    }
 }

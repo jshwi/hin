@@ -161,7 +161,7 @@ pub fn link(symlink: String, _target: String) -> Result<()> {
         //   path, absolute path, etc.
         if prop.contains_key(&symlink) {
             // todo
-            //  make this an error
+            //   make this an error
             panic!("{} already added", &symlink)
         }
         for (key, value) in prop.iter() {
@@ -196,6 +196,8 @@ pub fn link(symlink: String, _target: String) -> Result<()> {
             debug!("added {:?} to config", value_path);
         }
     }
+    // todo
+    //   make this an error
     panic!(
         "link not related to a symlink or parent of a symlink in dotfile repo"
     );

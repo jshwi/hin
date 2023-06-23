@@ -7,15 +7,19 @@ use hin::{
     parser::{Args, Command},
     DOTFILES,
 };
+use log::debug;
 
 
 fn set_repo_path() -> Result<()> {
     let name: String = env::var("CARGO_PKG_NAME")?;
-    if env::var(DOTFILES).is_err() {
-        env::set_var(
-            DOTFILES,
-            directories::BaseDirs::new().unwrap().data_dir().join(name),
-        )
+    debug!("CARGO_PKG_NAME={}", name);
+    let repo = env::var(DOTFILES);
+    let default = directories::BaseDirs::new().unwrap().data_dir().join(name);
+    if repo.is_err() {
+        debug!("DOTFILES not set, defaulting to {:?}", default);
+        env::set_var(DOTFILES, default)
+    } else {
+        debug!("DOTFILES={}", repo.unwrap());
     };
     Ok(())
 }
@@ -23,6 +27,7 @@ fn set_repo_path() -> Result<()> {
 
 fn main() -> Result<()> {
     color_eyre::install()?;
+    env_logger::init();
     set_repo_path()?;
     let args = Args::parse();
     match args.command {

@@ -157,8 +157,8 @@ pub fn link(symlink: String, _target: String) -> Result<()> {
     let mut config = Ini::load_from_file(path).unwrap();
     for (_, prop) in &mut config {
         // todo
-        //  this only evaluates the string provided and not relative
-        //  path, absolute path, etc.
+        //   this only evaluates the string provided and not relative
+        //   path, absolute path, etc.
         if prop.contains_key(&symlink) {
             // todo
             //  make this an error
@@ -189,20 +189,16 @@ pub fn link(symlink: String, _target: String) -> Result<()> {
                 continue;
             }
             // todo
-            //     config.add(custom)
-            //     out.print(
-            //         f"linked {custom.key.path} to "
-            //         "{custom.value.path}"
-            //     )
-            //     return f"add {custom.key.path.name}"
+            //   config.add(custom)
+            debug!("link {:?} to {:?}", key_path, value_path);
+            // todo
+            //   return f"add {custom.key.path.name}"
+            debug!("added {:?} to config", value_path);
         }
     }
-    // todo
-    //     raise ValueError(
-    //         "link not related to a symlink or parent of a symlink"
-    //         "in dotfile repo"
-    //     )
-    Ok(())
+    panic!(
+        "link not related to a symlink or parent of a symlink in dotfile repo"
+    );
 }
 
 

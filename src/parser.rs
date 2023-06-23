@@ -47,7 +47,7 @@ pub enum Command {
     /// Any dangling symlinks that exist are removed if they share a
     /// name with a versioned dotfile.
     Install {},
-    /// Create a new LINK from TARGET.
+    /// Create a new FILE from TARGET.
     ///
     /// Create a symlink to an existing linked dotfile, reproducible
     /// with a dotfile installation. This is useful for shared configs.
@@ -61,7 +61,7 @@ pub enum Command {
     /// system.
     ///
     /// Changes will be committed.
-    Link { symlink: String, target: String },
+    Link { file: String, target: String },
     /// List all versioned dotfiles.
     List {},
     /// Push changes to remote.

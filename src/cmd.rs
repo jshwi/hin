@@ -1,4 +1,4 @@
-use std::{env, path::Path};
+use std::{env, fs::rename, os::unix::fs::symlink, path::Path};
 
 use color_eyre::Result;
 use git2::Repository;
@@ -61,7 +61,39 @@ pub fn commit(file: String) -> Result<()> {
 
 
 pub fn install() -> Result<()> {
-    println!("installed");
+    let dotfiles = &env::var(DOTFILES)?;
+    let path = Path::new(dotfiles).join("dotfiles.ini");
+    let config = Ini::load_from_file(path).unwrap();
+    for (_, prop) in &config {
+        for (key, value) in prop.iter() {
+            let key_path = shellexpand::env(&key)?.to_string();
+            let value_path = shellexpand::env(&value)?.to_string();
+            let key_path = Path::new(&key_path);
+            if key_path.exists()
+                && !key_path.is_symlink()
+                && key_path.read_link()? == Path::new(&value_path)
+            {
+                println!(
+                    "{} {:?}",
+                    ansi_term::Color::Yellow.bold().paint("backed up"),
+                    key_path
+                );
+                rename(
+                    key_path,
+                    Path::new(&key_path.parent().unwrap()).join(format!(
+                        "{:?}.{}",
+                        key_path.file_name(),
+                        chrono::Utc::now().timestamp()
+                    )),
+                )?;
+            };
+            // TODO
+            // while true
+            // if file exists, unlink
+            // if file not found, mkdir
+            symlink(&value_path, key_path)?;
+        }
+    }
     Ok(())
 }
 

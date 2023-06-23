@@ -2,11 +2,18 @@ use clap::Parser;
 use color_eyre::Result;
 use hin::{
     add::add,
-    cmd,
+    clone::clone,
+    commit::commit,
     install::install,
     link::link,
+    list::list,
     misc::set_repo_path,
     parser::{Args, Command},
+    push::push,
+    remove::remove,
+    status::status,
+    undo::undo,
+    uninstall::uninstall,
 };
 
 fn main() -> Result<()> {
@@ -16,16 +23,16 @@ fn main() -> Result<()> {
     let args = Args::parse();
     match args.command {
         Command::Add { file } => add(file).unwrap(),
-        Command::Clone { url } => cmd::clone(url).unwrap(),
-        Command::Commit { file } => cmd::commit(file).unwrap(),
+        Command::Clone { url } => clone(url).unwrap(),
+        Command::Commit { file } => commit(file).unwrap(),
         Command::Install {} => install().unwrap(),
         Command::Link { file, target } => link(file, target).unwrap(),
-        Command::List {} => cmd::list().unwrap(),
-        Command::Push {} => cmd::push().unwrap(),
-        Command::Remove { file } => cmd::remove(file).unwrap(),
-        Command::Status {} => cmd::status().unwrap(),
-        Command::Undo {} => cmd::undo().unwrap(),
-        Command::Uninstall {} => cmd::uninstall().unwrap(),
+        Command::List {} => list().unwrap(),
+        Command::Push {} => push().unwrap(),
+        Command::Remove { file } => remove(file).unwrap(),
+        Command::Status {} => status().unwrap(),
+        Command::Undo {} => undo().unwrap(),
+        Command::Uninstall {} => uninstall().unwrap(),
     }
     Ok(())
 }

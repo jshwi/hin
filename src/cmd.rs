@@ -57,14 +57,12 @@ pub fn list() -> Result<()> {
 
 
 pub fn add(file: String) -> Result<()> {
-    debug!("added {}", file);
-    Ok(())
+    todo!("add {}", file);
 }
 
 
 pub fn commit(file: String) -> Result<()> {
-    debug!("committed {}", file);
-    Ok(())
+    todo!("commit {}", file);
 }
 
 
@@ -205,26 +203,22 @@ pub fn link(symlink: String, _target: String) -> Result<()> {
 
 
 pub fn push() -> Result<()> {
-    debug!("pushed");
-    Ok(())
+    todo!("push");
 }
 
 
 pub fn remove(file: String) -> Result<()> {
-    debug!("removed {}", file);
-    Ok(())
+    todo!("remove {}", file);
 }
 
 
 pub fn status() -> Result<()> {
-    debug!("showed status");
-    Ok(())
+    todo!("status");
 }
 
 
 pub fn undo() -> Result<()> {
-    debug!("undone");
-    Ok(())
+    todo!("undo");
 }
 
 

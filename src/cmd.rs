@@ -188,8 +188,19 @@ pub fn link(symlink: String, _target: String) -> Result<()> {
                 debug!("{} not equal to {}", rel_new_path, rel_value_path);
                 continue;
             }
+            // todo
+            // config.add(custom)
+            // out.print(
+            //     f"linked {custom.key.path} to {custom.value.path}"
+            // )
+            // return f"add {custom.key.path.name}"
         }
     }
+    // todo
+    // raise ValueError(
+    //     "link not related to a symlink or parent of a symlink in"
+    //     " dotfile repo"
+    // )
     Ok(())
 }
 

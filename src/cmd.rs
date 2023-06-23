@@ -4,9 +4,11 @@ use color_eyre::Result;
 use git2::Repository;
 use ini::Ini;
 
+use crate::DOTFILES;
+
 
 pub fn clone(url: String) -> Result<()> {
-    let dotfiles = &env::var("DOTFILES")?;
+    let dotfiles = &env::var(DOTFILES)?;
     let path = Path::new(&dotfiles);
     let repo_name = url
         .split('/')
@@ -28,13 +30,18 @@ pub fn clone(url: String) -> Result<()> {
 
 
 pub fn list() -> Result<()> {
-    let dotfiles = &env::var("DOTFILES")?;
+    let dotfiles = &env::var(DOTFILES)?;
     let path = Path::new(dotfiles).join("dotfiles.ini");
     let config = Ini::load_from_file(path).unwrap();
     for (_, prop) in &config {
         for (key, value) in prop.iter() {
-            let kind = ansi_term::Color::Green.bold().paint("+");
-            println!("{} {:?}:{:?}", kind, key, value);
+            let mut kind = ansi_term::Color::Green.bold().paint("+");
+            let mut path = key.to_string();
+            if value.starts_with("$HOME") {
+                kind = ansi_term::Color::Cyan.bold().paint("=");
+                path += &format!(" -> {}", value);
+            }
+            println!("{} {}", kind, shellexpand::env(&path)?);
         }
     }
     Ok(())

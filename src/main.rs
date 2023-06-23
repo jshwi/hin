@@ -3,7 +3,19 @@ use std::env;
 use clap::Parser;
 use color_eyre::Result;
 use hin::{
-    commands::{clone, list},
+    commands::{
+        add,
+        clone,
+        commit,
+        install,
+        link,
+        list,
+        push,
+        remove,
+        status,
+        undo,
+        uninstall,
+    },
     parser::{Args, Command},
     DOTFILES,
 };
@@ -19,19 +31,17 @@ fn main() -> Result<()> {
     }
     let args = Args::parse();
     match args.command {
-        Command::Add { file } => println!("added {}", file),
-        Command::Clone { url } => clone(&url).unwrap(),
-        Command::Commit { file } => println!("committed {}", file),
-        Command::Install {} => println!("installing"),
-        Command::Link { link, target } => {
-            println!("linked {} to {}", link, target)
-        }
+        Command::Add { file } => add(file).unwrap(),
+        Command::Clone { url } => clone(url).unwrap(),
+        Command::Commit { file } => commit(file).unwrap(),
+        Command::Install {} => install().unwrap(),
+        Command::Link { symlink, target } => link(symlink, target).unwrap(),
         Command::List {} => list().unwrap(),
-        Command::Push {} => println!("pushed"),
-        Command::Remove { file } => println!("removed {}", file),
-        Command::Status {} => println!("showed status"),
-        Command::Undo {} => println!("undone"),
-        Command::Uninstall {} => println!("uninstalled"),
+        Command::Push {} => push().unwrap(),
+        Command::Remove { file } => remove(file).unwrap(),
+        Command::Status {} => status().unwrap(),
+        Command::Undo {} => undo().unwrap(),
+        Command::Uninstall {} => uninstall().unwrap(),
     }
     Ok(())
 }

@@ -61,7 +61,7 @@ pub enum Command {
     /// system.
     ///
     /// Changes will be committed.
-    Link { link: String, target: String },
+    Link { symlink: String, target: String },
     /// List all versioned dotfiles.
     List {},
     /// Push changes to remote.

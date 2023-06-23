@@ -4,7 +4,8 @@ use color_eyre::Result;
 use git2::Repository;
 use ini::Ini;
 
-pub fn clone(url: &str) -> Result<()> {
+
+pub fn clone(url: String) -> Result<()> {
     let dotfiles = &env::var("DOTFILES")?;
     let path = Path::new(&dotfiles);
     let repo_name = url
@@ -14,7 +15,7 @@ pub fn clone(url: &str) -> Result<()> {
         .unwrap()
         .replace(".git", "");
     println!("cloning '{}' into {:?}", repo_name, path);
-    match Repository::clone(url, path) {
+    match Repository::clone(&url, path) {
         Ok(repo) => repo,
         Err(e) => panic!("failed to clone: {}", e),
     };
@@ -36,5 +37,59 @@ pub fn list() -> Result<()> {
             println!("{} {:?}:{:?}", kind, key, value);
         }
     }
+    Ok(())
+}
+
+
+pub fn add(file: String) -> Result<()> {
+    println!("added {}", file);
+    Ok(())
+}
+
+
+pub fn commit(file: String) -> Result<()> {
+    println!("committed {}", file);
+    Ok(())
+}
+
+
+pub fn install() -> Result<()> {
+    println!("installed");
+    Ok(())
+}
+
+
+pub fn link(symlink: String, target: String) -> Result<()> {
+    println!("linked {} to {}", symlink, target);
+    Ok(())
+}
+
+
+pub fn push() -> Result<()> {
+    println!("pushed");
+    Ok(())
+}
+
+
+pub fn remove(file: String) -> Result<()> {
+    println!("removed {}", file);
+    Ok(())
+}
+
+
+pub fn status() -> Result<()> {
+    println!("showed status");
+    Ok(())
+}
+
+
+pub fn undo() -> Result<()> {
+    println!("undone");
+    Ok(())
+}
+
+
+pub fn uninstall() -> Result<()> {
+    println!("uninstalled");
     Ok(())
 }

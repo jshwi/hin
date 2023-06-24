@@ -1,4 +1,4 @@
-use std::{env, path::Path};
+use std::{env, fs::create_dir_all, path::Path};
 
 use color_eyre::Result;
 use log::debug;
@@ -19,6 +19,9 @@ pub fn set_repo_path() -> Result<()> {
     } else {
         debug!("DOTFILES={}", repo.unwrap());
     };
+    let dotfiles = env::var(DOTFILES)?;
+    debug!("creating {}", dotfiles);
+    if create_dir_all(dotfiles).is_ok() {};
     Ok(())
 }
 

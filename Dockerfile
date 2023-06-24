@@ -43,6 +43,7 @@ EOF
 RUN <<EOF
 chmod 755 /opt/entrypoint
 chmod 755 /bin/rhin
+chmod 755 /bin/c
 pip3 install hin pygments
 cargo build --manifest-path /opt/hin/Cargo.toml
 EOF

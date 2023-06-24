@@ -20,8 +20,10 @@ pub fn set_repo_path() -> Result<()> {
         debug!("DOTFILES={}", repo.unwrap());
     };
     let dotfiles = env::var(DOTFILES)?;
-    debug!("creating {}", dotfiles);
-    if create_dir_all(dotfiles).is_ok() {};
+    if !Path::new(&dotfiles).exists() {
+        if create_dir_all(&dotfiles).is_ok() {};
+        debug!("creating {}", dotfiles);
+    }
     Ok(())
 }
 

@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, path::Path};
 
 use color_eyre::Result;
 use log::debug;
@@ -20,4 +20,10 @@ pub fn set_repo_path() -> Result<()> {
         debug!("DOTFILES={}", repo.unwrap());
     };
     Ok(())
+}
+
+
+pub fn is_child_of(this: &str, other_key: &Path, other_value: &Path) -> bool {
+    this.starts_with(other_key.to_str().unwrap())
+        || this.starts_with(other_value.to_str().unwrap())
 }

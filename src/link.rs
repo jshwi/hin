@@ -5,7 +5,7 @@ use ini::Ini;
 use log::debug;
 use relative_path::RelativePath;
 
-use crate::{gitignore::unignore, DOTFILES};
+use crate::{gitignore::unignore, misc::is_child_of, DOTFILES};
 
 pub fn link(symlink: String, _target: String) -> Result<()> {
     let dotfiles = &env::var(DOTFILES)?;
@@ -30,8 +30,7 @@ pub fn link(symlink: String, _target: String) -> Result<()> {
             let rel_value_path =
                 RelativePath::new(value_path.to_str().unwrap());
             let logical_path = rel_value_path.to_logical_path(dotfiles);
-            if (symlink.starts_with(key_path.to_str().unwrap())
-                || symlink.starts_with(value_path.to_str().unwrap()))
+            if is_child_of(&symlink, key_path, value_path)
                 && logical_path.exists()
             {
                 debug!("{} starts with {:?}", symlink, key_path);

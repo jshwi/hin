@@ -60,7 +60,6 @@ pub fn add(file: String) -> Result<()> {
             panic!("{} is a dangling symlink", &file)
         }
     }
-    // _re.sub(r"^\.", "", str(super().relpath))
     let dotfile_name = Regex::new(r"^\.")
         .unwrap()
         .replace(entry.file_name().unwrap().to_str().unwrap(), "")

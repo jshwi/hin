@@ -7,12 +7,10 @@ use std::{
 use color_eyre::Result;
 use ini::Ini;
 use log::debug;
-use regex::Regex;
-use relative_path::RelativePath;
 
 use crate::{
+    files::{FileTrait, Matrix},
     gitignore::unignore,
-    misc::{is_child_of, linksrc},
     DOTFILES,
 };
 
@@ -21,13 +19,16 @@ fn add_dir(p0: &Path) {
 }
 
 
-fn child_from(p0: &str, p1: &str) -> PathBuf {
-    todo!("{}.child({})", p1, p0)
-}
-
-
 pub fn add(file: String) -> Result<()> {
-    let mut entry = PathBuf::from(&file);
+    let mut entry = Matrix::new(
+        &file,
+        &PathBuf::from(&file)
+            .file_name()
+            .unwrap()
+            .to_os_string()
+            .into_string()
+            .unwrap(),
+    );
     let dotfiles = &env::var(DOTFILES)?;
     let dotfiles = Path::new(dotfiles);
     let dotfiles_ini = Path::new(dotfiles).join("dotfiles.ini");
@@ -36,57 +37,47 @@ pub fn add(file: String) -> Result<()> {
     if dotfiles_ini.is_file() {
         config = Ini::load_from_file(&dotfiles_ini).unwrap();
     }
-    let dotfile_name = Regex::new(r"^\.")
-        .unwrap()
-        .replace(entry.file_name().unwrap().to_str().unwrap(), "")
-        .to_string();
-    let home_file = format!("$HOME/{}", file);
-    let dotfile_repr_file = format!("${}/{}", DOTFILES, dotfile_name);
     for (_, prop) in &config {
-        debug!("checking if config contains {}", &home_file);
-        if prop.contains_key(&home_file) {
+        debug!("checking if config contains {}", &entry.key.repr());
+        if prop.contains_key(&entry.key.repr()) {
             // todo
             //   make this an error
-            panic!("{} already added", &home_file)
+            panic!("{} already added", &entry.key.repr())
         }
     }
-    debug!("config does not contain {}", home_file);
-    if entry.is_symlink() {
-        entry = linksrc(entry)?;
+    debug!("config does not contain {}", &entry.key.repr());
+    if entry.key.path().is_symlink() {
+        entry = entry.linksrc()?
     }
-    let dotfile_path = entry.parent().unwrap().join(&dotfile_name);
-    let dotfile_path = RelativePath::from_path(&dotfile_path)?;
-    let mut dotfile_path = dotfile_path.to_logical_path(dotfiles);
-    if dotfile_path.exists() {
-        dotfile_path = dotfile_path.parent().unwrap().join(format!(
-            "{:?}.{:?}",
-            &dotfile_name,
-            chrono::Utc::now().timestamp()
-        ));
+    if entry.value.path().exists() {
+        entry = entry.timestamped()
     }
-    debug!("moving {:?} to {:?}", &entry, dotfile_path);
-    match rename(&entry, dotfile_path) {
+    debug!(
+        "moving {:?} to {:?}",
+        &entry.key.path(),
+        &entry.value.path()
+    );
+    match rename(&entry.key.path(), &entry.value.path()) {
         Ok(_) => {
-            if entry.is_dir() {
+            if entry.key.path().is_dir() {
                 // add .gitignore files and check for any children that
                 // might already be versioned
-                add_dir(&entry)
+                add_dir(&entry.key.path())
             }
             config
                 .with_section(None::<String>)
-                .set(home_file, dotfile_repr_file);
+                .set(&entry.key.repr(), &entry.value.repr());
             config.write_to_file(&dotfiles_ini)?;
         }
         Err(e) => {
             let mut add_child = false;
             for (_, prop) in &config {
                 for (key, value) in prop.iter() {
-                    if is_child_of(&file, Path::new(key), Path::new(value)) {
-                        let child = child_from(&file, value);
-                        unignore(
-                            &child,
-                            &PathBuf::from(child.parent().unwrap()),
-                        );
+                    let existing =
+                        Matrix::new(&String::from(key), &String::from(value));
+                    if entry.is_child_of(&existing) {
+                        let child = existing.child(&entry);
+                        unignore(&child.value.path(), &entry.value.path());
                         add_child = true;
                         break;
                     }
@@ -95,11 +86,11 @@ pub fn add(file: String) -> Result<()> {
             if !add_child {
                 // todo
                 //   make this an error
-                panic!("{}: {} not found", e, &file)
+                panic!("{}", e)
             }
         }
     }
-    println!("added {:?}", entry);
+    println!("added {:?}", &entry.key.path());
     // todo
     //  commit here
     Ok(())

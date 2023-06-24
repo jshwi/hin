@@ -4,6 +4,7 @@ use std::{
 };
 
 use color_eyre::Result;
+use log::debug;
 use regex::Regex;
 
 use crate::DOTFILES;
@@ -13,11 +14,16 @@ pub trait FileTrait {
     fn env(&self) -> &String;
     fn root(&self) -> PathBuf;
     fn relpath(&self) -> PathBuf {
-        PathBuf::from(
+        let str_root = &self.root().into_os_string().into_string().unwrap();
+        debug!("string = {}", &self.string());
+        debug!("root = {}", &str_root);
+        let p = PathBuf::from(
             self.string()
                 .to_string()
-                .replace(&format!("{:?}/", &self.root()), ""),
-        )
+                .replace(&format!("{}/", str_root), ""),
+        );
+        debug!("relpath = {:?}", p);
+        p
     }
     fn path(&self) -> PathBuf {
         PathBuf::from(&self.root()).join(&self.relpath())

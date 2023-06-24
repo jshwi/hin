@@ -68,6 +68,11 @@ pub fn add(file: String) -> Result<()> {
                 .with_section(None::<String>)
                 .set(&entry.key.repr(), &entry.value.repr());
             config.write_to_file(&dotfiles_ini)?;
+            debug!(
+                "added {}: {} to config",
+                &entry.key.repr(),
+                &entry.value.repr()
+            );
         }
         Err(e) => {
             let mut add_child = false;

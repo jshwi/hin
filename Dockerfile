@@ -29,9 +29,20 @@ COPY <<'EOF' /bin/rhin
 #!/bin/sh
 cargo run --manifest-path /opt/hin/Cargo.toml "$@"
 EOF
+COPY <<'EOF' /bin/c
+#!/bin/sh
+stdin="${1}"
+if command -v pygmentize >/dev/null 2>&1; then
+  if pygmentize --help >/dev/null 2>&1; then
+    pygmentize -O style=monokai -f console256 -g "${stdin}"
+    return 0
+  fi
+fi
+cat "${stdin}"
+EOF
 RUN <<EOF
 chmod 755 /opt/entrypoint
 chmod 755 /bin/rhin
-pip3 install hin
+pip3 install hin pygments
 cargo build --manifest-path /opt/hin/Cargo.toml
 EOF

@@ -29,7 +29,13 @@ pub trait FileTrait {
         PathBuf::from(&self.root()).join(&self.relpath())
     }
     fn repr(&self) -> String {
-        format!("{:?}/{:?}", self.env(), self.relpath())
+        let r = format!(
+            "{}/{}",
+            &self.env(),
+            &self.relpath().into_os_string().into_string().unwrap()
+        );
+        debug!("repr = {}", r);
+        r
     }
 }
 

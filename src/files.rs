@@ -30,7 +30,7 @@ pub trait FileTrait {
     }
     fn repr(&self) -> String {
         let r = format!(
-            "{}/{}",
+            "${}/{}",
             &self.env(),
             &self.relpath().into_os_string().into_string().unwrap()
         );

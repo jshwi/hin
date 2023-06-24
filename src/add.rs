@@ -8,15 +8,28 @@ use color_eyre::Result;
 use ini::Ini;
 use log::debug;
 
-use crate::DOTFILES;
+use crate::{gitignore::unignore, misc::is_child_of, DOTFILES};
 
 fn add_dir(p0: &Path) {
     todo!("add dir {:?}", p0)
 }
 
 
-fn add_child(p0: &Path) -> bool {
-    todo!("add child {:?}", p0)
+fn add_child(p0: &str, config: Ini) -> bool {
+    for (_, prop) in &config {
+        for (key, value) in prop.iter() {
+            if is_child_of(p0, Path::new(key), Path::new(value)) {
+                let child = child_from(p0, value);
+                unignore(&child, &PathBuf::from(child.parent().unwrap()));
+                return true;
+            }
+        }
+    }
+    false
+}
+
+fn child_from(p0: &str, p1: &str) -> PathBuf {
+    todo!("{}.child({})", p1, p0)
 }
 
 
@@ -60,7 +73,7 @@ pub fn add(file: String) -> Result<()> {
             //   config.add(entry)
         }
         Err(_) => {
-            if !add_child(&entry) {
+            if !add_child(&file, config) {
                 // todo
                 //   make this an error
                 panic!("{} not found", &file)

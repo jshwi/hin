@@ -37,8 +37,8 @@ pub fn link(symlink: String, _target: String) -> Result<()> {
                 debug!("or {} starts with {:?}", symlink, value_path);
                 debug!("and {:?} exists", logical_path);
                 unignore(
-                    rel_new_path.to_logical_path(dotfiles),
-                    rel_value_path.to_logical_path(dotfiles),
+                    &rel_new_path.to_logical_path(dotfiles),
+                    &rel_value_path.to_logical_path(dotfiles),
                 );
             } else if rel_new_path != rel_value_path {
                 debug!("{} not equal to {}", rel_new_path, rel_value_path);

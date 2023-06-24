@@ -26,10 +26,15 @@ pub fn add(file: String) -> Result<()> {
     let mut entry = PathBuf::from(&file);
     let dotfiles = &env::var(DOTFILES)?;
     let dotfiles = Path::new(dotfiles);
-    let path = Path::new(dotfiles).join("dotfiles.ini");
-    debug!("listing dotfiles configured in {:?}", path);
-    let config = Ini::load_from_file(path).unwrap();
+    let dotfiles_ini = Path::new(dotfiles).join("dotfiles.ini");
+    debug!("listing dotfiles configured in {:?}", dotfiles_ini);
+    let mut config = Ini::load_from_file(&dotfiles_ini).unwrap();
+    let dotfile_name = Regex::new(r"^\.")
+        .unwrap()
+        .replace(entry.file_name().unwrap().to_str().unwrap(), "")
+        .to_string();
     let home_file = format!("$HOME/{}", file);
+    let dotfile_repr_file = format!("${}/{}", DOTFILES, dotfile_name);
     for (_, prop) in &config {
         debug!("checking if config contains {}", &home_file);
         if prop.contains_key(&home_file) {
@@ -47,10 +52,6 @@ pub fn add(file: String) -> Result<()> {
             panic!("{} is a dangling symlink", &file)
         }
     }
-    let dotfile_name = Regex::new(r"^\.")
-        .unwrap()
-        .replace(entry.file_name().unwrap().to_str().unwrap(), "")
-        .to_string();
     let dotfile_path = entry.parent().unwrap().join(&dotfile_name);
     let dotfile_path = RelativePath::from_path(&dotfile_path)?;
     let mut dotfile_path = dotfile_path.to_logical_path(dotfiles);
@@ -69,8 +70,10 @@ pub fn add(file: String) -> Result<()> {
                 // might already be versioned
                 add_dir(&entry)
             }
-            // todo
-            //   config.add(entry)
+            config
+                .with_section(None::<String>)
+                .set(home_file, dotfile_repr_file);
+            config.write_to_file(&dotfiles_ini)?;
         }
         Err(e) => {
             let mut add_child = false;

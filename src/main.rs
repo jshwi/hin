@@ -22,17 +22,17 @@ fn main() -> Result<()> {
     set_repo_path()?;
     let args = Args::parse();
     match args.command {
-        Command::Add { file } => add(file).unwrap(),
-        Command::Clone { url } => clone(url).unwrap(),
-        Command::Commit { file } => commit(file).unwrap(),
-        Command::Install {} => install().unwrap(),
-        Command::Link { file, target } => link(file, target).unwrap(),
-        Command::List {} => list().unwrap(),
-        Command::Push {} => push().unwrap(),
-        Command::Remove { file } => remove(file).unwrap(),
-        Command::Status {} => status().unwrap(),
-        Command::Undo {} => undo().unwrap(),
-        Command::Uninstall {} => uninstall().unwrap(),
+        Command::Add { file } => add(file)?,
+        Command::Clone { url } => clone(url)?,
+        Command::Commit { file } => commit(file)?,
+        Command::Install {} => install()?,
+        Command::Link { file, target } => link(file, target)?,
+        Command::List {} => list()?,
+        Command::Push {} => push()?,
+        Command::Remove { file } => remove(file)?,
+        Command::Status {} => status()?,
+        Command::Undo {} => undo()?,
+        Command::Uninstall {} => uninstall()?,
     }
     Ok(())
 }

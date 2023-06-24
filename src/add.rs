@@ -10,7 +10,11 @@ use log::debug;
 use regex::Regex;
 use relative_path::RelativePath;
 
-use crate::{gitignore::unignore, misc::is_child_of, DOTFILES};
+use crate::{
+    gitignore::unignore,
+    misc::{is_child_of, linksrc},
+    DOTFILES,
+};
 
 fn add_dir(p0: &Path) {
     todo!("add dir {:?}", p0)
@@ -48,12 +52,7 @@ pub fn add(file: String) -> Result<()> {
     }
     debug!("config does not contain {}", home_file);
     if entry.is_symlink() {
-        entry = entry.read_link()?;
-        if !entry.exists() {
-            // todo
-            //   make this an error
-            panic!("{} is a dangling symlink", &file)
-        }
+        entry = linksrc(entry)?;
     }
     let dotfile_path = entry.parent().unwrap().join(&dotfile_name);
     let dotfile_path = RelativePath::from_path(&dotfile_path)?;

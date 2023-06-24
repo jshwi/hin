@@ -1,4 +1,8 @@
-use std::{env, fs::create_dir_all, path::Path};
+use std::{
+    env,
+    fs::create_dir_all,
+    path::{Path, PathBuf},
+};
 
 use color_eyre::Result;
 use log::debug;
@@ -31,4 +35,21 @@ pub fn set_repo_path() -> Result<()> {
 pub fn is_child_of(this: &str, other_key: &Path, other_value: &Path) -> bool {
     this.starts_with(other_key.to_str().unwrap())
         || this.starts_with(other_value.to_str().unwrap())
+}
+
+
+pub fn linksrc(entry: PathBuf) -> Result<PathBuf> {
+    // value = _Path(_os.readlink(self.key.path))
+    // if not value.exists():
+    //     raise FileNotFoundError(f"{value.absolute()} is a dangling
+    // symlink")
+    //
+    // return Entry.new(value)
+    let entry = entry.read_link()?;
+    if !entry.exists() {
+        // todo
+        //   make this an error
+        panic!("{:?} is a dangling symlink", &entry)
+    }
+    Ok(entry)
 }

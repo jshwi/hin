@@ -7,6 +7,7 @@ use std::{
 use color_eyre::Result;
 use ini::Ini;
 use log::debug;
+use relative_path::RelativePath;
 
 use crate::{gitignore::unignore, misc::is_child_of, DOTFILES};
 
@@ -58,14 +59,17 @@ pub fn add(file: String) -> Result<()> {
             panic!("{} is a dangling symlink", &file)
         }
     }
-    if entry.exists() {
-        entry = entry.parent().unwrap().join(format!(
+    let dotfile_path = RelativePath::from_path(&entry)?;
+    let mut dotfile_path = dotfile_path.to_logical_path(dotfiles);
+    if dotfile_path.exists() {
+        dotfile_path = dotfile_path.parent().unwrap().join(format!(
             "{:?}.{:?}",
             entry.file_name(),
             chrono::Utc::now().timestamp()
         ));
     }
-    match rename(&entry, dotfiles.join(entry.file_name().unwrap())) {
+    debug!("moving {:?} to {:?}", &entry, dotfile_path);
+    match rename(&entry, dotfile_path) {
         Ok(_) => {
             if entry.is_dir() {
                 // add .gitignore files and check for any children that

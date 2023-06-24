@@ -61,20 +61,17 @@ pub fn add(file: String) -> Result<()> {
         }
     }
     // _re.sub(r"^\.", "", str(super().relpath))
-    let dotfile_path = entry.parent().unwrap().join(
-        Regex::new(r"^\.")
-            .unwrap()
-            .replace(entry.file_name().unwrap().to_str().unwrap(), "")
-            .to_string(),
-    );
+    let dotfile_name = Regex::new(r"^\.")
+        .unwrap()
+        .replace(entry.file_name().unwrap().to_str().unwrap(), "")
+        .to_string();
+    let dotfile_path = entry.parent().unwrap().join(&dotfile_name);
     let dotfile_path = RelativePath::from_path(&dotfile_path)?;
     let mut dotfile_path = dotfile_path.to_logical_path(dotfiles);
     if dotfile_path.exists() {
         dotfile_path = dotfile_path.parent().unwrap().join(format!(
             "{:?}.{:?}",
-            Regex::new(r"^\.")
-                .unwrap()
-                .replace(entry.file_name().unwrap().to_str().unwrap(), ""),
+            &dotfile_name,
             chrono::Utc::now().timestamp()
         ));
     }

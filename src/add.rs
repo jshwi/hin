@@ -7,6 +7,7 @@ use std::{
 use color_eyre::Result;
 use ini::Ini;
 use log::debug;
+use regex::Regex;
 use relative_path::RelativePath;
 
 use crate::{gitignore::unignore, misc::is_child_of, DOTFILES};
@@ -59,12 +60,21 @@ pub fn add(file: String) -> Result<()> {
             panic!("{} is a dangling symlink", &file)
         }
     }
-    let dotfile_path = RelativePath::from_path(&entry)?;
+    // _re.sub(r"^\.", "", str(super().relpath))
+    let dotfile_path = entry.parent().unwrap().join(
+        Regex::new(r"^\.")
+            .unwrap()
+            .replace(entry.file_name().unwrap().to_str().unwrap(), "")
+            .to_string(),
+    );
+    let dotfile_path = RelativePath::from_path(&dotfile_path)?;
     let mut dotfile_path = dotfile_path.to_logical_path(dotfiles);
     if dotfile_path.exists() {
         dotfile_path = dotfile_path.parent().unwrap().join(format!(
             "{:?}.{:?}",
-            entry.file_name(),
+            Regex::new(r"^\.")
+                .unwrap()
+                .replace(entry.file_name().unwrap().to_str().unwrap(), ""),
             chrono::Utc::now().timestamp()
         ));
     }

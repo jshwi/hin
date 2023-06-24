@@ -427,6 +427,7 @@ dependencies = [
  "git2",
  "home",
  "log",
+ "regex",
  "relative-path",
  "rust-ini",
  "shellexpand",

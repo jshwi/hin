@@ -17,19 +17,6 @@ fn add_dir(p0: &Path) {
 }
 
 
-fn add_child(p0: &str, config: Ini) -> bool {
-    for (_, prop) in &config {
-        for (key, value) in prop.iter() {
-            if is_child_of(p0, Path::new(key), Path::new(value)) {
-                let child = child_from(p0, value);
-                unignore(&child, &PathBuf::from(child.parent().unwrap()));
-                return true;
-            }
-        }
-    }
-    false
-}
-
 fn child_from(p0: &str, p1: &str) -> PathBuf {
     todo!("{}.child({})", p1, p0)
 }
@@ -86,7 +73,21 @@ pub fn add(file: String) -> Result<()> {
             //   config.add(entry)
         }
         Err(e) => {
-            if !add_child(&file, config) {
+            let mut add_child = false;
+            for (_, prop) in &config {
+                for (key, value) in prop.iter() {
+                    if is_child_of(&file, Path::new(key), Path::new(value)) {
+                        let child = child_from(&file, value);
+                        unignore(
+                            &child,
+                            &PathBuf::from(child.parent().unwrap()),
+                        );
+                        add_child = true;
+                        break;
+                    }
+                }
+            }
+            if !add_child {
                 // todo
                 //   make this an error
                 panic!("{}: {} not found", e, &file)

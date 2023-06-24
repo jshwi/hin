@@ -28,7 +28,10 @@ pub fn add(file: String) -> Result<()> {
     let dotfiles = Path::new(dotfiles);
     let dotfiles_ini = Path::new(dotfiles).join("dotfiles.ini");
     debug!("listing dotfiles configured in {:?}", dotfiles_ini);
-    let mut config = Ini::load_from_file(&dotfiles_ini).unwrap();
+    let mut config = Ini::new();
+    if dotfiles_ini.is_file() {
+        config = Ini::load_from_file(&dotfiles_ini).unwrap();
+    }
     let dotfile_name = Regex::new(r"^\.")
         .unwrap()
         .replace(entry.file_name().unwrap().to_str().unwrap(), "")

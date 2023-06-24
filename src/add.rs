@@ -40,13 +40,16 @@ pub fn add(file: String) -> Result<()> {
     let path = Path::new(dotfiles).join("dotfiles.ini");
     debug!("listing dotfiles configured in {:?}", path);
     let config = Ini::load_from_file(path).unwrap();
+    let home_file = format!("$HOME/{}", file);
     for (_, prop) in &config {
-        if prop.contains_key(&file) {
+        debug!("checking if config contains {}", &home_file);
+        if prop.contains_key(&home_file) {
             // todo
             //   make this an error
-            panic!("{} already added", &file)
+            panic!("{} already added", &home_file)
         }
     }
+    debug!("config does not contain {}", home_file);
     if entry.is_symlink() {
         entry = entry.read_link()?;
         if !entry.exists() {
@@ -72,11 +75,11 @@ pub fn add(file: String) -> Result<()> {
             // todo
             //   config.add(entry)
         }
-        Err(_) => {
+        Err(e) => {
             if !add_child(&file, config) {
                 // todo
                 //   make this an error
-                panic!("{} not found", &file)
+                panic!("{}: {} not found", e, &file)
             }
         }
     }

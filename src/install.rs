@@ -10,7 +10,10 @@ use color_eyre::Result;
 use ini::Ini;
 use log::debug;
 
-use crate::DOTFILES;
+use crate::{
+    files::{FileTrait, Matrix},
+    DOTFILES,
+};
 
 pub fn install() -> Result<()> {
     let dotfiles = &env::var(DOTFILES)?;
@@ -19,50 +22,53 @@ pub fn install() -> Result<()> {
     let config = Ini::load_from_file(path).unwrap();
     for (_, prop) in &config {
         for (key, value) in prop.iter() {
-            let key_path = shellexpand::env(&key)?.to_string();
-            let value_path = shellexpand::env(&value)?.to_string();
-            let key_path = Path::new(&key_path);
-            let value_path = Path::new(&value_path);
+            let dotfile = Matrix::new(&key.to_string(), &value.to_string());
             let mut is_a_dotfiles_link = false;
-            if key_path.is_symlink() {
-                let linksrc = key_path.read_link()?;
-                debug!("{:?} leads to {:?}", key_path, linksrc);
-                debug!("value_path={:?}", value_path);
-                if value_path == linksrc {
+            if dotfile.key.path().is_symlink() {
+                let linksrc = &dotfile.key.path().read_link()?;
+                debug!("{:?} leads to {:?}", &dotfile.key.path(), linksrc);
+                debug!("value_path={:?}", &dotfile.value.path());
+                if &dotfile.value.path() == linksrc {
                     debug!("is a dotfiles link");
                     is_a_dotfiles_link = true;
                 }
             }
-            if key_path.exists() {
+            if dotfile.key.path().exists() {
                 if is_a_dotfiles_link {
                     debug!(
                         "removing {:?}, an existing dotfile link",
-                        key_path
+                        &dotfile.key.path()
                     );
-                    remove_file(key_path)?;
+                    remove_file(&dotfile.key.path())?;
                 } else {
-                    let new_key_path = Path::new(&key_path.parent().unwrap())
-                        .join(format!(
-                            "{:?}.{}",
-                            key_path.file_name(),
-                            chrono::Utc::now().timestamp()
-                        ));
-                    debug!("renamed {:?} to {:?}", key_path, new_key_path);
-                    rename(key_path, &new_key_path)?;
+                    let new_key_path = Path::new(
+                        &dotfile.key.path().parent().unwrap(),
+                    )
+                    .join(format!(
+                        "{:?}.{}",
+                        &dotfile.key.path().file_name(),
+                        chrono::Utc::now().timestamp()
+                    ));
+                    debug!(
+                        "renamed {:?} to {:?}",
+                        &dotfile.key.path(),
+                        &new_key_path
+                    );
+                    rename(&dotfile.key.path(), &new_key_path)?;
                     println!(
                         "{} {:?}",
                         ansi_term::Color::Yellow.bold().paint("backed up"),
-                        key_path
+                        &dotfile.key.path()
                     )
                 }
             }
             loop {
-                match symlink(value_path, key_path) {
+                match symlink(&dotfile.value.path(), &dotfile.key.path()) {
                     Ok(_) => {
                         println!(
                             "{} {:?}",
                             ansi_term::Color::Green.bold().paint("installed"),
-                            key_path
+                            &dotfile.key.path()
                         );
                         break;
                     }
@@ -70,12 +76,13 @@ pub fn install() -> Result<()> {
                         ErrorKind::AlreadyExists => {
                             debug!(
                                 "removing {:?}, a dangling symlink",
-                                key_path
+                                &dotfile.key.path()
                             );
-                            remove_file(key_path)?;
+                            remove_file(&dotfile.key.path())?;
                         }
                         ErrorKind::NotFound => {
-                            let parent = key_path.parent().unwrap();
+                            let path = dotfile.key.path();
+                            let parent = path.parent().unwrap();
                             debug!("{:?} does not exist, creating", parent);
                             create_dir(parent)?
                         }

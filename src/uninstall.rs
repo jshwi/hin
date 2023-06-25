@@ -9,7 +9,7 @@ use crate::DOTFILES;
 pub fn uninstall() -> color_eyre::Result<()> {
     let dotfiles = &env::var(DOTFILES)?;
     let path = Path::new(dotfiles).join("dotfiles.ini");
-    debug!("installing dotfiles configured in {:?}", path);
+    debug!("installing dotfiles configured in {}", path.display());
     let config = Ini::load_from_file(path).unwrap();
     println!("removed the following dotfiles:");
     for (_, prop) in &config {

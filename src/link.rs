@@ -11,7 +11,7 @@ use crate::{gitignore::unignore, misc::is_child_of, DOTFILES};
 pub fn link(symlink: String, _target: String) -> Result<()> {
     let dotfiles = &env::var(DOTFILES)?;
     let path = Path::new(dotfiles).join("dotfiles.ini");
-    debug!("dotfile configuration: {:?}", path);
+    debug!("dotfile configuration: {}", path.display());
     let mut config = Ini::load_from_file(path).unwrap();
     for (_, prop) in &mut config {
         // todo
@@ -34,9 +34,9 @@ pub fn link(symlink: String, _target: String) -> Result<()> {
             if is_child_of(&symlink, key_path, value_path)
                 && logical_path.exists()
             {
-                debug!("{} starts with {:?}", symlink, key_path);
-                debug!("or {} starts with {:?}", symlink, value_path);
-                debug!("and {:?} exists", logical_path);
+                debug!("{} starts with {}", symlink, key_path.display());
+                debug!("or {} starts with {}", symlink, value_path.display());
+                debug!("and {} exists", logical_path.display());
                 unignore(
                     &rel_new_path.to_logical_path(dotfiles),
                     &rel_value_path.to_logical_path(dotfiles),
@@ -47,10 +47,10 @@ pub fn link(symlink: String, _target: String) -> Result<()> {
             }
             // todo
             //   config.add(custom)
-            debug!("link {:?} to {:?}", key_path, value_path);
+            debug!("link {} to {}", key_path.display(), value_path.display());
             // todo
             //   return f"add {custom.key.path.name}"
-            debug!("added {:?} to config", value_path);
+            debug!("added {} to config", value_path.display());
         }
     }
     // todo

@@ -10,7 +10,7 @@ use crate::DOTFILES;
 pub fn list() -> Result<()> {
     let dotfiles = &env::var(DOTFILES)?;
     let path = Path::new(dotfiles).join("dotfiles.ini");
-    debug!("listing dotfiles configured in {:?}", path);
+    debug!("listing dotfiles configured in {}", path.display());
     let config = Ini::load_from_file(path).unwrap();
     for (_, prop) in &config {
         for (key, value) in prop.iter() {

@@ -7,6 +7,7 @@ use relative_path::RelativePath;
 
 use crate::{gitignore::unignore, misc::is_child_of, DOTFILES};
 
+
 pub fn link(symlink: String, _target: String) -> Result<()> {
     let dotfiles = &env::var(DOTFILES)?;
     let path = Path::new(dotfiles).join("dotfiles.ini");

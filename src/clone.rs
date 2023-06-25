@@ -5,6 +5,7 @@ use git2::Repository;
 
 use crate::DOTFILES;
 
+
 pub fn clone(url: String) -> Result<()> {
     let dotfiles = &env::var(DOTFILES)?;
     let path = Path::new(&dotfiles);

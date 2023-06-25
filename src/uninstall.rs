@@ -5,6 +5,7 @@ use log::debug;
 
 use crate::DOTFILES;
 
+
 pub fn uninstall() -> color_eyre::Result<()> {
     let dotfiles = &env::var(DOTFILES)?;
     let path = Path::new(dotfiles).join("dotfiles.ini");

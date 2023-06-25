@@ -6,6 +6,7 @@ use log::debug;
 
 use crate::DOTFILES;
 
+
 pub fn list() -> Result<()> {
     let dotfiles = &env::var(DOTFILES)?;
     let path = Path::new(dotfiles).join("dotfiles.ini");

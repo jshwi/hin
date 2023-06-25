@@ -9,6 +9,7 @@ use log::debug;
 
 use crate::DOTFILES;
 
+
 pub fn set_repo_path() -> Result<()> {
     let name: String = env::var("CARGO_PKG_NAME")?;
     debug!("CARGO_PKG_NAME={}", name);

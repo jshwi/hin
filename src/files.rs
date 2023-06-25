@@ -8,6 +8,7 @@ use regex::Regex;
 
 use crate::DOTFILES;
 
+
 pub trait FileTrait {
     fn string(&self) -> &String;
     fn env(&self) -> &String;
@@ -37,6 +38,7 @@ pub struct Symlink {
     string: String,
     env: String,
 }
+
 
 impl Symlink {
     fn new(string: &String, env: String) -> Result<Self> {
@@ -113,6 +115,7 @@ pub struct Matrix {
     pub key: Symlink,
     pub value: Dotfile,
 }
+
 
 impl Matrix {
     pub fn new(key: &String, value: &String) -> Self {

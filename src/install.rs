@@ -41,7 +41,7 @@ pub fn install() -> Result<()> {
                     )
                     .join(format!(
                         "{:?}.{}",
-                        &dotfile.key.path().file_name(),
+                        &dotfile.key.path().file_name().unwrap(),
                         chrono::Utc::now().timestamp()
                     ));
                     debug!(

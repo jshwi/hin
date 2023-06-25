@@ -19,7 +19,7 @@ pub fn set_repo_path() -> Result<()> {
     env::set_var("USER_DATA_DIR", user_data_dir);
     let default = user_data_dir.join(name);
     if repo.is_err() {
-        debug!("DOTFILES not set, defaulting to {:?}", default);
+        debug!("DOTFILES not set, defaulting to {}", default.display());
         env::set_var(DOTFILES, default)
     } else {
         debug!("DOTFILES={}", repo.unwrap());

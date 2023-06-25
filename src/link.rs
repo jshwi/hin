@@ -16,6 +16,7 @@ pub fn link(symlink: String, target: String) -> Result<()> {
     debug!("dotfile configuration: {}", path.display());
     let mut config = Ini::load_from_file(path).unwrap();
     let custom = Matrix::new(&symlink, &target);
+    let mut add_to_config = false;
     for (_, prop) in &mut config {
         if prop.contains_key(custom.key.repr()) {
             // todo
@@ -47,8 +48,7 @@ pub fn link(symlink: String, target: String) -> Result<()> {
                 );
                 continue;
             }
-            // todo
-            //   config.add(custom)
+            add_to_config = true;
             debug!(
                 "link {} to {}",
                 custom.key.path().display(),
@@ -56,12 +56,21 @@ pub fn link(symlink: String, target: String) -> Result<()> {
             );
             // todo
             //   return f"add {custom.key.path.name}"
+            println!(
+                "add {}",
+                custom.key.path().file_name().unwrap().to_str().unwrap()
+            );
             debug!("added {} to config", existing.value.path().display());
+            break;
         }
     }
-    // todo
-    //   make this an error
-    panic!(
-        "link not related to a symlink or parent of a symlink in dotfile repo"
-    );
+    if !add_to_config {
+        // todo
+        //   make this an error
+        panic!(
+            "link not related to a symlink or parent of a symlink in dotfile \
+             repo"
+        );
+    }
+    Ok(())
 }

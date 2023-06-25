@@ -53,11 +53,7 @@ pub fn add(file: String) -> Result<()> {
     if entry.value.path().exists() {
         entry = entry.timestamped()
     }
-    debug!(
-        "moving {:?} to {:?}",
-        &entry.key.path(),
-        &entry.value.path()
-    );
+    debug!("moving {:?} to {:?}", &entry.key.path(), &entry.value.path());
     match rename(&entry.key.path(), &entry.value.path()) {
         Ok(_) => {
             if entry.key.path().is_dir() {

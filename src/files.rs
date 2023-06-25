@@ -16,9 +16,7 @@ pub trait FileTrait {
     fn relpath(&self) -> PathBuf {
         let str_root = &self.root().into_os_string().into_string().unwrap();
         PathBuf::from(
-            self.string()
-                .to_string()
-                .replace(&format!("{}/", str_root), ""),
+            self.string().to_string().replace(&format!("{}/", str_root), ""),
         )
     }
     fn path(&self) -> PathBuf {

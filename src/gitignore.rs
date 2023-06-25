@@ -1,6 +1,5 @@
-use std::path::PathBuf;
+use std::path::Path;
 
-
-pub fn unignore(path_1: &PathBuf, path_2: &PathBuf) {
-    todo!("unignore {:?}: {:?}", path_1, path_2)
+pub fn unignore(path_1: &Path, path_2: &Path) {
+    todo!("unignore {}: {}", path_1.display(), path_2.display())
 }

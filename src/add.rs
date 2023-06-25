@@ -15,7 +15,7 @@ use crate::{
 };
 
 fn add_dir(p0: &Path) {
-    todo!("add dir {:?}", p0)
+    todo!("add dir {}", p0.display())
 }
 
 

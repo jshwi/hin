@@ -17,7 +17,7 @@ pub fn uninstall() -> color_eyre::Result<()> {
             let key_path = shellexpand::env(&key)?.to_string();
             let key_path = Path::new(&key_path);
             if key_path.is_symlink() {
-                println!("\t{:?}", key_path);
+                println!("\t{}", key_path.display());
                 fs::remove_file(key_path)?;
             }
         }

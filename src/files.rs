@@ -97,7 +97,7 @@ impl FileTrait for Dotfile {
         let relpath = PathBuf::from(
             self.string()
                 .to_string()
-                .replace(&format!("{:?}/", &self.root()), ""),
+                .replace(&format!("{}/", &self.root().display()), ""),
         );
         PathBuf::from(
             Regex::new(r"^\.")
@@ -128,7 +128,7 @@ impl Matrix {
         if !value.exists() {
             // todo
             //   make this an error
-            panic!("{:?} is a dangling symlink", &value)
+            panic!("{} is a dangling symlink", &value.display())
         }
         let value = String::from(value.to_str().unwrap());
         Ok(Self::new(&value, &value))
@@ -143,7 +143,7 @@ impl Matrix {
                 .parent()
                 .unwrap()
                 .join(format!(
-                    "{:?}.{:?}",
+                    "{}.{}",
                     &self.value.string,
                     chrono::Utc::now().timestamp()
                 ))

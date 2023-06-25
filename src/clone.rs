@@ -15,7 +15,7 @@ pub fn clone(url: String) -> Result<()> {
         .pop()
         .unwrap()
         .replace(".git", "");
-    println!("cloning '{}' into {:?}", repo_name, path);
+    println!("cloning '{}' into {}", repo_name, path.display());
     match Repository::clone(&url, path) {
         Ok(repo) => repo,
         Err(e) => panic!("failed to clone: {}", e),

@@ -44,7 +44,7 @@ pub fn install() -> Result<()> {
                         &dotfile.key.path().parent().unwrap(),
                     )
                     .join(format!(
-                        "{}.{:?}",
+                        "{}.{}",
                         &dotfile
                             .key
                             .path()

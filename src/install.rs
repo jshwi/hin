@@ -1,10 +1,4 @@
-use std::{
-    env,
-    fs::{create_dir, remove_file, rename},
-    io::ErrorKind,
-    os::unix::fs::symlink,
-    path::Path,
-};
+use std::{env, fs, io::ErrorKind, os::unix::fs::symlink, path::Path};
 
 use color_eyre::Result;
 use ini::Ini;
@@ -40,7 +34,7 @@ pub fn install() -> Result<()> {
                         "removing {:?}, an existing dotfile link",
                         &dotfile.key.path()
                     );
-                    remove_file(&dotfile.key.path())?;
+                    fs::remove_file(&dotfile.key.path())?;
                 } else {
                     let new_key_path = Path::new(
                         &dotfile.key.path().parent().unwrap(),
@@ -55,7 +49,7 @@ pub fn install() -> Result<()> {
                         &dotfile.key.path(),
                         &new_key_path
                     );
-                    rename(&dotfile.key.path(), &new_key_path)?;
+                    fs::rename(&dotfile.key.path(), &new_key_path)?;
                     println!(
                         "{} {:?}",
                         ansi_term::Color::Yellow.bold().paint("backed up"),
@@ -79,13 +73,13 @@ pub fn install() -> Result<()> {
                                 "removing {:?}, a dangling symlink",
                                 &dotfile.key.path()
                             );
-                            remove_file(&dotfile.key.path())?;
+                            fs::remove_file(&dotfile.key.path())?;
                         }
                         ErrorKind::NotFound => {
                             let path = dotfile.key.path();
                             let parent = path.parent().unwrap();
                             debug!("{:?} does not exist, creating", parent);
-                            create_dir(parent)?
+                            fs::create_dir(parent)?
                         }
                         other_error => {
                             panic!(

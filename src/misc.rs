@@ -1,6 +1,6 @@
 use std::{
     env,
-    fs::create_dir_all,
+    fs,
     path::{Path, PathBuf},
 };
 
@@ -26,7 +26,7 @@ pub fn set_repo_path() -> Result<()> {
     };
     let dotfiles = env::var(DOTFILES)?;
     if !Path::new(&dotfiles).exists() {
-        if create_dir_all(&dotfiles).is_ok() {};
+        if fs::create_dir_all(&dotfiles).is_ok() {};
         debug!("creating {}", dotfiles);
     }
     Ok(())

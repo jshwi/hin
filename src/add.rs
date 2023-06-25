@@ -1,6 +1,6 @@
 use std::{
     env,
-    fs::rename,
+    fs,
     path::{Path, PathBuf},
 };
 
@@ -13,7 +13,6 @@ use crate::{
     gitignore::unignore,
     DOTFILES,
 };
-
 
 fn add_dir(p0: &Path) {
     todo!("add dir {:?}", p0)
@@ -54,7 +53,7 @@ pub fn add(file: String) -> Result<()> {
         entry = entry.timestamped()
     }
     debug!("moving {:?} to {:?}", &entry.key.path(), &entry.value.path());
-    match rename(&entry.key.path(), &entry.value.path()) {
+    match fs::rename(&entry.key.path(), &entry.value.path()) {
         Ok(_) => {
             if entry.key.path().is_dir() {
                 // add .gitignore files and check for any children that

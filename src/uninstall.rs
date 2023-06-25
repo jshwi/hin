@@ -1,4 +1,4 @@
-use std::{env, fs::remove_file, path::Path};
+use std::{env, fs, path::Path};
 
 use ini::Ini;
 use log::debug;
@@ -18,7 +18,7 @@ pub fn uninstall() -> color_eyre::Result<()> {
             let key_path = Path::new(&key_path);
             if key_path.is_symlink() {
                 println!("\t{:?}", key_path);
-                remove_file(key_path)?;
+                fs::remove_file(key_path)?;
             }
         }
     }

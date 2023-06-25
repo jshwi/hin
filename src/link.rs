@@ -64,7 +64,11 @@ pub fn link(symlink: String, target: String) -> Result<()> {
             break;
         }
     }
-    if !add_to_config {
+    if add_to_config {
+        config
+            .with_section(None::<String>)
+            .set(&custom.key.repr(), &custom.value.repr());
+    } else {
         // todo
         //   make this an error
         panic!(

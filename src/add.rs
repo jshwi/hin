@@ -32,7 +32,7 @@ pub fn add(file: String) -> Result<()> {
     let dotfiles = &env::var(DOTFILES)?;
     let dotfiles = Path::new(dotfiles);
     let dotfiles_ini = Path::new(dotfiles).join("dotfiles.ini");
-    debug!("listing dotfiles configured in {:?}", dotfiles_ini);
+    debug!("listing dotfiles configured in {}", dotfiles_ini.display());
     let mut config = Ini::new();
     if dotfiles_ini.is_file() {
         config = Ini::load_from_file(&dotfiles_ini).unwrap();
@@ -52,7 +52,11 @@ pub fn add(file: String) -> Result<()> {
     if entry.value.path().exists() {
         entry = entry.timestamped()
     }
-    debug!("moving {:?} to {:?}", &entry.key.path(), &entry.value.path());
+    debug!(
+        "moving {} to {}",
+        &entry.key.path().display(),
+        &entry.value.path().display()
+    );
     match fs::rename(&entry.key.path(), &entry.value.path()) {
         Ok(_) => {
             if entry.key.path().is_dir() {

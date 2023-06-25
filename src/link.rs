@@ -3,54 +3,60 @@ use std::{env, path::Path};
 use color_eyre::Result;
 use ini::Ini;
 use log::debug;
-use relative_path::RelativePath;
 
-use crate::{gitignore::unignore, misc::is_child_of, DOTFILES};
+use crate::{
+    files::{FileTrait, Matrix},
+    gitignore::unignore,
+    DOTFILES,
+};
 
-
-pub fn link(symlink: String, _target: String) -> Result<()> {
+pub fn link(symlink: String, target: String) -> Result<()> {
     let dotfiles = &env::var(DOTFILES)?;
     let path = Path::new(dotfiles).join("dotfiles.ini");
     debug!("dotfile configuration: {}", path.display());
     let mut config = Ini::load_from_file(path).unwrap();
+    let custom = Matrix::new(&symlink, &target);
     for (_, prop) in &mut config {
-        // todo
-        //   this only evaluates the string provided and not relative
-        //   path, absolute path, etc.
-        if prop.contains_key(&symlink) {
+        if prop.contains_key(custom.key.repr()) {
             // todo
             //   make this an error
             panic!("{} already added", &symlink)
         }
         for (key, value) in prop.iter() {
-            let key_path = shellexpand::env(&key)?.to_string();
-            let value_path = shellexpand::env(&value)?.to_string();
-            let key_path = Path::new(&key_path);
-            let value_path = Path::new(&value_path);
-            let rel_new_path = RelativePath::new(&symlink);
-            let rel_value_path =
-                RelativePath::new(value_path.to_str().unwrap());
-            let logical_path = rel_value_path.to_logical_path(dotfiles);
-            if is_child_of(&symlink, key_path, value_path)
-                && logical_path.exists()
+            let existing = Matrix::new(&key.to_string(), &value.to_string());
+            if custom.is_child_of(&existing)
+                && custom.realsrc().value.path().exists()
             {
-                debug!("{} starts with {}", symlink, key_path.display());
-                debug!("or {} starts with {}", symlink, value_path.display());
-                debug!("and {} exists", logical_path.display());
-                unignore(
-                    &rel_new_path.to_logical_path(dotfiles),
-                    &rel_value_path.to_logical_path(dotfiles),
+                debug!(
+                    "{} starts with {}",
+                    symlink,
+                    existing.key.path().display()
                 );
-            } else if rel_new_path != rel_value_path {
-                debug!("{} not equal to {}", rel_new_path, rel_value_path);
+                debug!(
+                    "or {} starts with {}",
+                    symlink,
+                    existing.value.path().display()
+                );
+                debug!("and {} exists", custom.key.relpath().display());
+                unignore(&custom.key.relpath(), &existing.key.relpath());
+            } else if custom.key.relpath() != existing.value.path() {
+                debug!(
+                    "{} not equal to {}",
+                    custom.key.relpath().display(),
+                    existing.value.relpath().display()
+                );
                 continue;
             }
             // todo
             //   config.add(custom)
-            debug!("link {} to {}", key_path.display(), value_path.display());
+            debug!(
+                "link {} to {}",
+                custom.key.path().display(),
+                existing.key.path().display()
+            );
             // todo
             //   return f"add {custom.key.path.name}"
-            debug!("added {} to config", value_path.display());
+            debug!("added {} to config", existing.value.path().display());
         }
     }
     // todo

@@ -187,4 +187,11 @@ impl Matrix {
                 .unwrap(),
         )
     }
+
+    pub fn realsrc(&self) -> Matrix {
+        Self::new(
+            &self.key.relpath().into_os_string().into_string().unwrap(),
+            &self.value.relpath().into_os_string().into_string().unwrap(),
+        )
+    }
 }

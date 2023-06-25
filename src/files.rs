@@ -153,12 +153,12 @@ impl Matrix {
         )
     }
 
-    pub fn is_child_of(&self, other: &Matrix) -> bool {
+    pub fn is_child_of(&self, other: &Self) -> bool {
         self.key.path().starts_with(other.key.path())
             || self.value.path().starts_with(other.key.path())
     }
 
-    pub fn child(&self, entry: &Matrix) -> Matrix {
+    pub fn child(&self, entry: &Self) -> Self {
         let mut relpath = PathBuf::from(
             Regex::new(r"^\.")
                 .unwrap()
@@ -188,7 +188,7 @@ impl Matrix {
         )
     }
 
-    pub fn realsrc(&self) -> Matrix {
+    pub fn realsrc(&self) -> Self {
         Self::new(
             &self.key.relpath().into_os_string().into_string().unwrap(),
             &self.value.relpath().into_os_string().into_string().unwrap(),

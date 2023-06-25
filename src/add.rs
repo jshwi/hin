@@ -95,7 +95,7 @@ pub fn add(file: String) -> Result<()> {
             }
         }
     }
-    println!("added {:?}", &entry.key.path());
+    println!("added {}", &entry.key.path().display());
     // todo
     //  commit here
     Ok(())

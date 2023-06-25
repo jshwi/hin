@@ -1,18 +1,10 @@
-use std::{env, fs, path::Path};
+use std::{fs, path::Path};
 
-use ini::Ini;
-use log::debug;
-
-use crate::DOTFILES;
-
+use crate::config::Config;
 
 pub fn uninstall() -> color_eyre::Result<()> {
-    let dotfiles = &env::var(DOTFILES)?;
-    let path = Path::new(dotfiles).join("dotfiles.ini");
-    debug!("installing dotfiles configured in {}", path.display());
-    let config = Ini::load_from_file(path).unwrap();
-    println!("removed the following dotfiles:");
-    for (_, prop) in &config {
+    let config = Config::new()?;
+    for (_, prop) in &config.ini {
         for (key, _) in prop.iter() {
             let key_path = shellexpand::env(&key)?.to_string();
             let key_path = Path::new(&key_path);

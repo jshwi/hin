@@ -1,23 +1,17 @@
-use std::{env, path::Path};
-
 use color_eyre::Result;
-use ini::Ini;
 use log::debug;
 
 use crate::{
+    config::Config,
     files::{FileTrait, Matrix},
     gitignore::unignore,
-    DOTFILES,
 };
 
 pub fn link(symlink: String, target: String) -> Result<()> {
-    let dotfiles = &env::var(DOTFILES)?;
-    let path = Path::new(dotfiles).join("dotfiles.ini");
-    debug!("dotfile configuration: {}", path.display());
-    let mut config = Ini::load_from_file(path).unwrap();
+    let mut config = Config::new()?;
     let custom = Matrix::new(&symlink, &target);
     let mut add_to_config = false;
-    for (_, prop) in &mut config {
+    for (_, prop) in &mut config.ini {
         if prop.contains_key(custom.key.repr()) {
             // todo
             //   make this an error
@@ -65,9 +59,7 @@ pub fn link(symlink: String, target: String) -> Result<()> {
         }
     }
     if add_to_config {
-        config
-            .with_section(None::<String>)
-            .set(&custom.key.repr(), &custom.value.repr());
+        config.add(&custom.key.repr(), &custom.value.repr());
     } else {
         // todo
         //   make this an error

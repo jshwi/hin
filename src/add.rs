@@ -1,17 +1,15 @@
 use std::{
-    env,
     fs,
     path::{Path, PathBuf},
 };
 
 use color_eyre::Result;
-use ini::Ini;
 use log::debug;
 
 use crate::{
+    config::Config,
     files::{FileTrait, Matrix},
     gitignore::unignore,
-    DOTFILES,
 };
 
 fn add_dir(p0: &Path) {
@@ -29,15 +27,8 @@ pub fn add(file: String) -> Result<()> {
             .into_string()
             .unwrap(),
     );
-    let dotfiles = &env::var(DOTFILES)?;
-    let dotfiles = Path::new(dotfiles);
-    let dotfiles_ini = Path::new(dotfiles).join("dotfiles.ini");
-    debug!("listing dotfiles configured in {}", dotfiles_ini.display());
-    let mut config = Ini::new();
-    if dotfiles_ini.is_file() {
-        config = Ini::load_from_file(&dotfiles_ini).unwrap();
-    }
-    for (_, prop) in &config {
+    let mut config = Config::new()?;
+    for (_, prop) in &config.ini {
         debug!("checking if config contains {}", &entry.key.repr());
         if prop.contains_key(&entry.key.repr()) {
             // todo
@@ -64,10 +55,7 @@ pub fn add(file: String) -> Result<()> {
                 // might already be versioned
                 add_dir(&entry.key.path())
             }
-            config
-                .with_section(None::<String>)
-                .set(&entry.key.repr(), &entry.value.repr());
-            config.write_to_file(&dotfiles_ini)?;
+            config.add(&entry.key.repr(), &entry.value.repr());
             debug!(
                 "added {}: {} to config",
                 &entry.key.repr(),
@@ -76,7 +64,7 @@ pub fn add(file: String) -> Result<()> {
         }
         Err(e) => {
             let mut add_child = false;
-            for (_, prop) in &config {
+            for (_, prop) in &config.ini {
                 for (key, value) in prop.iter() {
                     let existing =
                         Matrix::new(&String::from(key), &String::from(value));

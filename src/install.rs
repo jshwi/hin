@@ -1,21 +1,20 @@
 use std::{env, fs, io::ErrorKind, os::unix::fs::symlink, path::Path};
 
 use color_eyre::Result;
-use ini::Ini;
 use log::debug;
 
 use crate::{
+    config::Config,
     files::{FileTrait, Matrix},
     DOTFILES,
 };
-
 
 pub fn install() -> Result<()> {
     let dotfiles = &env::var(DOTFILES)?;
     let path = Path::new(dotfiles).join("dotfiles.ini");
     debug!("installing dotfiles configured in {}", path.display());
-    let config = Ini::load_from_file(path).unwrap();
-    for (_, prop) in &config {
+    let config = Config::new()?;
+    for (_, prop) in &config.ini {
         for (key, value) in prop.iter() {
             let dotfile = Matrix::new(&key.to_string(), &value.to_string());
             let mut is_a_dotfiles_link = false;

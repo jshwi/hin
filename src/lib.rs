@@ -1,6 +1,7 @@
 pub mod add;
 pub mod clone;
 pub mod commit;
+pub mod config;
 pub mod files;
 pub mod gitignore;
 pub mod install;

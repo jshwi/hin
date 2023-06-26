@@ -9,7 +9,6 @@ use log::debug;
 
 use crate::DOTFILES;
 
-
 pub struct Config {
     pub path: PathBuf,
     pub ini: Ini,

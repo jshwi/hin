@@ -31,8 +31,6 @@ pub fn add(file: String) -> Result<()> {
     for (_, prop) in &config.ini {
         debug!("checking if config contains {}", &entry.key.repr());
         if prop.contains_key(&entry.key.repr()) {
-            // todo
-            //   make this an error
             panic!("{} already added", &entry.key.repr())
         }
     }
@@ -77,8 +75,6 @@ pub fn add(file: String) -> Result<()> {
                 }
             }
             if !add_child {
-                // todo
-                //   make this an error
                 panic!("{}", e)
             }
         }

@@ -8,7 +8,6 @@ use regex::Regex;
 
 use crate::DOTFILES;
 
-
 pub trait FileTrait {
     fn string(&self) -> &String;
     fn env(&self) -> &String;

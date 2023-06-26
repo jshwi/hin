@@ -13,8 +13,6 @@ pub fn link(symlink: String, target: String) -> Result<()> {
     let mut add_to_config = false;
     for (_, prop) in &mut config.ini {
         if prop.contains_key(custom.key.repr()) {
-            // todo
-            //   make this an error
             panic!("{} already added", &symlink)
         }
         for (key, value) in prop.iter() {

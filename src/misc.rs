@@ -1,6 +1,7 @@
 use std::{env, fs, path::Path};
 
 use color_eyre::Result;
+use git2::Oid;
 use log::debug;
 
 use crate::DOTFILES;
@@ -25,4 +26,36 @@ pub fn set_repo_path() -> Result<()> {
         debug!("creating {}", dotfiles);
     }
     Ok(())
+}
+
+
+fn find_last_commit(repo: &git2::Repository) -> Result<git2::Commit> {
+    let obj = repo.head()?.resolve()?.peel(git2::ObjectType::Commit)?;
+    Ok(obj
+        .into_commit()
+        .map_err(|_| git2::Error::from_str("Couldn't find commit"))?)
+}
+
+
+pub fn commit(
+    repo: &git2::Repository,
+    path: &Path,
+    message: &str,
+) -> Result<Oid> {
+    // todo
+    //   proper author, email, and time
+    let mut index = repo.index()?;
+    index.add_path(path)?;
+    let oid = index.write_tree()?;
+    let signature = git2::Signature::now("author", "author@email")?;
+    let parent_commit = find_last_commit(repo)?;
+    let tree = repo.find_tree(oid)?;
+    Ok(repo.commit(
+        Some("HEAD"),
+        &signature,
+        &signature,
+        message,
+        &tree,
+        &[&parent_commit],
+    )?)
 }

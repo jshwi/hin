@@ -80,11 +80,11 @@ pub fn add(file: String, repository: git2::Repository) -> Result<()> {
             }
         }
     }
-    println!("added {}", &entry.key.path().display());
     commit_matrix(
         &repository,
         &entry.value,
         &format!("add {}", entry.key.relpath().display()),
     )?;
+    println!("added {}", &entry.key.path().display());
     Ok(())
 }

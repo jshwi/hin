@@ -80,7 +80,7 @@ pub fn add(file: String, mut config: Config, git: Git) -> Result<()> {
         }
     }
     git.commit_matrix(
-        &entry.value.path(),
+        Some(&entry.value.path()),
         &format!("add {}", entry.key.relpath().display()),
     )?;
     println!("added {}", &entry.key.path().display());

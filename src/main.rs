@@ -1,4 +1,4 @@
-use std::env;
+use std::path::Path;
 
 use clap::Parser;
 use color_eyre::Result;
@@ -9,24 +9,25 @@ use hin::{
     install::install,
     link::link,
     list::list,
-    misc::set_repo_path,
+    misc::{add_and_commit, set_repo_path, touch},
     parser::{Args, Command},
     push::push,
     remove::remove,
     status::status,
     undo::undo,
     uninstall::uninstall,
-    DOTFILES,
 };
 
 fn main() -> Result<()> {
     color_eyre::install()?;
     env_logger::init();
-    set_repo_path()?;
-    git2::Repository::init(env::var(DOTFILES)?)?;
+    let dotfiles = set_repo_path()?;
+    let repository = git2::Repository::init(&dotfiles)?;
+    touch(&dotfiles.join("dotfiles.ini"))?;
+    add_and_commit(&repository, Path::new("dotfiles.ini"), "initial commit")?;
     let args = Args::parse();
     match args.command {
-        Command::Add { file } => add(file)?,
+        Command::Add { file } => add(file, repository)?,
         Command::Clone { url } => clone(url)?,
         Command::Commit { file } => commit(file)?,
         Command::Install {} => install()?,

@@ -10,7 +10,7 @@ use crate::{
     config::Config,
     files::{FileTrait, Matrix},
     gitignore::unignore,
-    misc::commit,
+    misc::commit_matrix,
 };
 
 fn add_dir(p0: &Path) {
@@ -18,7 +18,7 @@ fn add_dir(p0: &Path) {
 }
 
 
-pub fn add(file: String) -> Result<()> {
+pub fn add(file: String, repository: git2::Repository) -> Result<()> {
     let mut entry = Matrix::new(
         &file,
         &PathBuf::from(&file)
@@ -81,6 +81,10 @@ pub fn add(file: String) -> Result<()> {
         }
     }
     println!("added {}", &entry.key.path().display());
-    commit(&entry.value, &format!("add {}", entry.key.relpath().display()))?;
+    commit_matrix(
+        &repository,
+        &entry.value,
+        &format!("add {}", entry.key.relpath().display()),
+    )?;
     Ok(())
 }

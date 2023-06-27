@@ -1,6 +1,7 @@
 use std::{
     env,
     fs,
+    fs::OpenOptions,
     path::{Path, PathBuf},
 };
 
@@ -10,7 +11,7 @@ use log::debug;
 
 use crate::{files::FileTrait, DOTFILES};
 
-pub fn set_repo_path() -> Result<()> {
+pub fn set_repo_path() -> Result<PathBuf> {
     let name: String = env::var("CARGO_PKG_NAME")?;
     debug!("CARGO_PKG_NAME={}", name);
     let repo = env::var(DOTFILES);
@@ -25,11 +26,12 @@ pub fn set_repo_path() -> Result<()> {
         debug!("DOTFILES={}", repo.unwrap());
     };
     let dotfiles = env::var(DOTFILES)?;
-    if !Path::new(&dotfiles).exists() {
+    let dotfiles = PathBuf::from(&dotfiles);
+    if !dotfiles.exists() {
         if fs::create_dir_all(&dotfiles).is_ok() {};
-        debug!("creating {}", dotfiles);
+        debug!("creating {}", dotfiles.display());
     }
-    Ok(())
+    Ok(dotfiles)
 }
 
 
@@ -41,11 +43,36 @@ fn find_last_commit(repo: &git2::Repository) -> Result<git2::Commit> {
 }
 
 
-pub fn commit(path: &impl FileTrait, message: &str) -> Result<Oid> {
+pub fn add_and_commit(
+    repository: &git2::Repository,
+    path: &Path,
+    message: &str,
+) -> Result<Oid> {
+    let mut index = repository.index()?;
+    index.add_path(path)?;
+    let oid = index.write_tree()?;
+    let signature = git2::Signature::now("author", "author@email")?;
+    let parent_commit = find_last_commit(repository)?;
+    let tree = repository.find_tree(oid)?;
+    Ok(repository.commit(
+        Some("HEAD"),
+        &signature,
+        &signature,
+        message,
+        &tree,
+        &[&parent_commit],
+    )?)
+}
+
+
+pub fn commit_matrix(
+    repository: &git2::Repository,
+    path: &impl FileTrait,
+    message: &str,
+) -> Result<Oid> {
     // todo
     //   proper author, email, and time
-    let repo = git2::Repository::open(env::var(DOTFILES)?)?;
-    let mut index = repo.index()?;
+    let mut index = repository.index()?;
     if path.path().is_dir() {
         debug!("getting files from {}", path.path().display());
         let paths = fs::read_dir(&path.path())?;
@@ -66,9 +93,9 @@ pub fn commit(path: &impl FileTrait, message: &str) -> Result<Oid> {
     }
     let oid = index.write_tree()?;
     let signature = git2::Signature::now("author", "author@email")?;
-    let parent_commit = find_last_commit(&repo)?;
-    let tree = repo.find_tree(oid)?;
-    Ok(repo.commit(
+    let parent_commit = find_last_commit(repository)?;
+    let tree = repository.find_tree(oid)?;
+    Ok(repository.commit(
         Some("HEAD"),
         &signature,
         &signature,
@@ -76,4 +103,10 @@ pub fn commit(path: &impl FileTrait, message: &str) -> Result<Oid> {
         &tree,
         &[&parent_commit],
     )?)
+}
+
+
+pub fn touch(path: &Path) -> Result<()> {
+    OpenOptions::new().create(true).write(true).open(path)?;
+    Ok(())
 }

@@ -1,3 +1,7 @@
+//! Hin
+//! Manage your hidden files
+#![warn(missing_docs)]
+
 use clap::Parser;
 use color_eyre::Result;
 use hin::{

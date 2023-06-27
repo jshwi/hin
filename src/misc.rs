@@ -1,7 +1,6 @@
 use std::{
     env,
     fs,
-    fs::OpenOptions,
     path::{Path, PathBuf},
 };
 
@@ -40,28 +39,6 @@ fn find_last_commit(repo: &git2::Repository) -> Result<git2::Commit> {
     Ok(obj
         .into_commit()
         .map_err(|_| git2::Error::from_str("Couldn't find commit"))?)
-}
-
-
-pub fn add_and_commit(
-    repository: &git2::Repository,
-    path: &Path,
-    message: &str,
-) -> Result<Oid> {
-    let mut index = repository.index()?;
-    index.add_path(path)?;
-    let oid = index.write_tree()?;
-    let signature = git2::Signature::now("author", "author@email")?;
-    let parent_commit = find_last_commit(repository)?;
-    let tree = repository.find_tree(oid)?;
-    Ok(repository.commit(
-        Some("HEAD"),
-        &signature,
-        &signature,
-        message,
-        &tree,
-        &[&parent_commit],
-    )?)
 }
 
 
@@ -113,12 +90,6 @@ pub fn commit_matrix(
         &tree,
         &[&parent_commit],
     )?)
-}
-
-
-pub fn touch(path: &Path) -> Result<()> {
-    OpenOptions::new().create(true).write(true).open(path)?;
-    Ok(())
 }
 
 

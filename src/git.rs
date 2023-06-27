@@ -7,7 +7,7 @@ use std::{
 use color_eyre::Result;
 use log::debug;
 
-use crate::{files::FileTrait, DOTFILES};
+use crate::DOTFILES;
 
 pub struct Git {
     repository: git2::Repository,
@@ -64,13 +64,13 @@ impl Git {
 
     pub fn commit_matrix(
         &self,
-        path: &impl FileTrait,
+        path: &Path,
         message: &str,
     ) -> Result<git2::Oid> {
         // todo
         //   proper author, email, and time
         let signature = self.repository.signature()?;
-        let oid = self.add_to_index(&path.path())?;
+        let oid = self.add_to_index(path)?;
         let parent_commit = self.find_last_commit()?;
         let tree = self.repository.find_tree(oid)?;
         Ok(self.repository.commit(
@@ -84,15 +84,15 @@ impl Git {
     }
 
     pub fn create_initial_commit(&self) -> Result<git2::Oid> {
-        let sig = self.repository.signature()?;
+        let signature = self.repository.signature()?;
         let mut index = self.repository.index()?;
         index.add_path(Path::new("dotfiles.ini"))?;
         let oid = index.write_tree()?;
         let tree = self.repository.find_tree(oid)?;
         Ok(self.repository.commit(
             Some("HEAD"),
-            &sig,
-            &sig,
+            &signature,
+            &signature,
             "Initial commit",
             &tree,
             &[],

@@ -1,10 +1,14 @@
-use std::{env, fs, path::Path};
+use std::{
+    env,
+    fs,
+    path::{Path, PathBuf},
+};
 
 use color_eyre::Result;
 use git2::Oid;
 use log::debug;
 
-use crate::DOTFILES;
+use crate::{files::FileTrait, DOTFILES};
 
 pub fn set_repo_path() -> Result<()> {
     let name: String = env::var("CARGO_PKG_NAME")?;
@@ -37,12 +41,29 @@ fn find_last_commit(repo: &git2::Repository) -> Result<git2::Commit> {
 }
 
 
-pub fn commit(path: &Path, message: &str) -> Result<Oid> {
+pub fn commit(path: &impl FileTrait, message: &str) -> Result<Oid> {
     // todo
     //   proper author, email, and time
     let repo = git2::Repository::open(env::var(DOTFILES)?)?;
     let mut index = repo.index()?;
-    index.add_path(path)?;
+    if path.path().is_dir() {
+        debug!("getting files from {}", path.path().display());
+        let paths = fs::read_dir(&path.path())?;
+        for p in paths {
+            let p = p.unwrap().path();
+            debug!("{}", p.display());
+            let relpath = PathBuf::from(
+                p.into_os_string()
+                    .into_string()
+                    .unwrap()
+                    .replace(&format!("{}/", env::var(DOTFILES)?), ""),
+            );
+            debug!("adding {} to index", relpath.display());
+            index.add_path(&relpath)?;
+        }
+    } else {
+        index.add_path(&path.relpath())?;
+    }
     let oid = index.write_tree()?;
     let signature = git2::Signature::now("author", "author@email")?;
     let parent_commit = find_last_commit(&repo)?;

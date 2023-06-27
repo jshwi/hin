@@ -28,9 +28,6 @@ fn main() -> Result<()> {
     let dotfiles = set_repo_path()?;
     let config = Config::new(&dotfiles)?;
     let git = Git::new(&dotfiles)?;
-    if !git.dir.is_dir() {
-        git.initial_commit()?;
-    }
     let args = Args::parse();
     match args.command {
         Command::Add { file } => add(file, config, git)?,

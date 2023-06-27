@@ -17,10 +17,20 @@ pub struct Git {
 
 impl Git {
     pub fn new(dotfiles: &Path) -> Result<Git> {
-        Ok(Self {
-            dir: dotfiles.join(".git"),
-            repository: git2::Repository::init(dotfiles)?,
-        })
+        let dir = dotfiles.join(".git");
+        if !dir.is_dir() {
+            let git = Self {
+                dir: dotfiles.join(".git"),
+                repository: git2::Repository::init(dotfiles)?,
+            };
+            git.initial_commit()?;
+            Ok(git)
+        } else {
+            Ok(Self {
+                dir: dotfiles.join(".git"),
+                repository: git2::Repository::open(dotfiles)?,
+            })
+        }
     }
 
     pub fn find_last_commit(&self) -> Result<git2::Commit> {

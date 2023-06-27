@@ -67,13 +67,11 @@ impl Git {
         Ok(index.write_tree()?)
     }
 
-    pub fn commit_matrix(
+    pub fn commit(
         &self,
         path: Option<&Path>,
         message: &str,
     ) -> Result<git2::Oid> {
-        // todo
-        //   proper author, email, and time
         let signature = self.repository.signature()?;
         let oid = self.add_to_index(path)?;
         let parent_commit = self.find_last_commit()?;
@@ -88,7 +86,7 @@ impl Git {
         )?)
     }
 
-    pub fn create_initial_commit(&self) -> Result<git2::Oid> {
+    pub fn initial_commit(&self) -> Result<git2::Oid> {
         let signature = self.repository.signature()?;
         let oid = self.add_to_index(None)?;
         let tree = self.repository.find_tree(oid)?;

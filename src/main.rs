@@ -29,7 +29,7 @@ fn main() -> Result<()> {
     let config = Config::new(&dotfiles)?;
     let git = Git::new(&dotfiles)?;
     if !git.dir.is_dir() {
-        git.create_initial_commit()?;
+        git.initial_commit()?;
     }
     let args = Args::parse();
     match args.command {

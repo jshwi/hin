@@ -9,8 +9,11 @@ use log::debug;
 
 use crate::{files::FileTrait, DOTFILES};
 
-pub fn find_last_commit(repo: &git2::Repository) -> Result<git2::Commit> {
-    let obj = repo.head()?.resolve()?.peel(git2::ObjectType::Commit)?;
+
+pub fn find_last_commit(
+    repository: &git2::Repository,
+) -> Result<git2::Commit> {
+    let obj = repository.head()?.resolve()?.peel(git2::ObjectType::Commit)?;
     Ok(obj
         .into_commit()
         .map_err(|_| git2::Error::from_str("Couldn't find commit"))?)

@@ -32,11 +32,7 @@ impl Git {
             .map_err(|_| git2::Error::from_str("Couldn't find commit"))?)
     }
 
-    pub fn add_to_index(
-        &self,
-        path: &Path,
-        relpath: &Path,
-    ) -> Result<git2::Oid> {
+    pub fn add_to_index(&self, path: &Path) -> Result<git2::Oid> {
         let mut index = self.repository.index()?;
         if path.is_dir() {
             debug!("getting files from {}", path.display());
@@ -54,7 +50,13 @@ impl Git {
                 index.add_path(&relpath)?;
             }
         } else {
-            index.add_path(relpath)?;
+            let relpath = PathBuf::from(
+                path.as_os_str()
+                    .to_str()
+                    .unwrap()
+                    .replace(&format!("{}/", env::var(DOTFILES)?), ""),
+            );
+            index.add_path(&relpath)?;
         }
         index.add_path(Path::new("dotfiles.ini"))?;
         Ok(index.write_tree()?)
@@ -67,8 +69,8 @@ impl Git {
     ) -> Result<git2::Oid> {
         // todo
         //   proper author, email, and time
-        let oid = self.add_to_index(&path.path(), &path.relpath())?;
-        let signature = git2::Signature::now("author", "author@email")?;
+        let signature = self.repository.signature()?;
+        let oid = self.add_to_index(&path.path())?;
         let parent_commit = self.find_last_commit()?;
         let tree = self.repository.find_tree(oid)?;
         Ok(self.repository.commit(
@@ -81,10 +83,11 @@ impl Git {
         )?)
     }
 
-    pub fn create_initial_commit(&self, path: &Path) -> Result<git2::Oid> {
+    pub fn create_initial_commit(&self) -> Result<git2::Oid> {
         let sig = self.repository.signature()?;
-        let oid =
-            self.add_to_index(path, Path::new(&path.file_name().unwrap()))?;
+        let mut index = self.repository.index()?;
+        index.add_path(Path::new("dotfiles.ini"))?;
+        let oid = index.write_tree()?;
         let tree = self.repository.find_tree(oid)?;
         Ok(self.repository.commit(
             Some("HEAD"),

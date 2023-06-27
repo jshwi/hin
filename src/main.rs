@@ -24,7 +24,7 @@ fn main() -> Result<()> {
     let dotfiles = set_repo_path()?;
     let config = Config::new(&dotfiles)?;
     let git = Git::new(&dotfiles)?;
-    git.create_initial_commit(&config.path)?;
+    git.create_initial_commit()?;
     let args = Args::parse();
     match args.command {
         Command::Add { file } => add(file, config, git)?,

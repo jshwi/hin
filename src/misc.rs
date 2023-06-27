@@ -37,18 +37,15 @@ fn find_last_commit(repo: &git2::Repository) -> Result<git2::Commit> {
 }
 
 
-pub fn commit(
-    repo: &git2::Repository,
-    path: &Path,
-    message: &str,
-) -> Result<Oid> {
+pub fn commit(path: &Path, message: &str) -> Result<Oid> {
     // todo
     //   proper author, email, and time
+    let repo = git2::Repository::open(env::var(DOTFILES)?)?;
     let mut index = repo.index()?;
     index.add_path(path)?;
     let oid = index.write_tree()?;
     let signature = git2::Signature::now("author", "author@email")?;
-    let parent_commit = find_last_commit(repo)?;
+    let parent_commit = find_last_commit(&repo)?;
     let tree = repo.find_tree(oid)?;
     Ok(repo.commit(
         Some("HEAD"),

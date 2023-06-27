@@ -1,5 +1,4 @@
 use std::{
-    env,
     fs,
     path::{Path, PathBuf},
 };
@@ -12,7 +11,6 @@ use crate::{
     files::{FileTrait, Matrix},
     gitignore::unignore,
     misc::commit,
-    DOTFILES,
 };
 
 fn add_dir(p0: &Path) {
@@ -83,9 +81,7 @@ pub fn add(file: String) -> Result<()> {
         }
     }
     println!("added {}", &entry.key.path().display());
-    let repo = git2::Repository::open(env::var(DOTFILES)?)?;
     commit(
-        &repo,
         &entry.value.path(),
         &format!("add {}", entry.key.path().display()),
     )?;

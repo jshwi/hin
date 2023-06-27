@@ -9,7 +9,7 @@ use log::debug;
 use crate::{
     config::Config,
     files::{FileTrait, Matrix},
-    git::commit_matrix,
+    git::Git,
     gitignore::unignore,
 };
 
@@ -18,11 +18,7 @@ fn add_dir(p0: &Path) {
 }
 
 
-pub fn add(
-    file: String,
-    mut config: Config,
-    repository: git2::Repository,
-) -> Result<()> {
+pub fn add(file: String, mut config: Config, git: Git) -> Result<()> {
     let mut entry = Matrix::new(
         &file,
         &PathBuf::from(&file)
@@ -83,8 +79,7 @@ pub fn add(
             }
         }
     }
-    commit_matrix(
-        &repository,
+    git.commit_matrix(
         &entry.value,
         &format!("add {}", entry.key.relpath().display()),
     )?;

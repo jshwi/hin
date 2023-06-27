@@ -5,7 +5,7 @@ use hin::{
     clone::clone,
     commit::commit,
     config::Config,
-    git::create_initial_commit,
+    git::Git,
     install::install,
     link::link,
     list::list,
@@ -23,11 +23,11 @@ fn main() -> Result<()> {
     env_logger::init();
     let dotfiles = set_repo_path()?;
     let config = Config::new(&dotfiles)?;
-    let repository = git2::Repository::init(&dotfiles)?;
-    create_initial_commit(&repository, &config.path)?;
+    let git = Git::new(&dotfiles)?;
+    git.create_initial_commit(&config.path)?;
     let args = Args::parse();
     match args.command {
-        Command::Add { file } => add(file, config, repository)?,
+        Command::Add { file } => add(file, config, git)?,
         Command::Clone { url } => clone(url)?,
         Command::Commit { file } => commit(file)?,
         Command::Install {} => install(config)?,

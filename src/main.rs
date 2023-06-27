@@ -1,5 +1,3 @@
-use std::path::Path;
-
 use clap::Parser;
 use color_eyre::Result;
 use hin::{
@@ -9,7 +7,7 @@ use hin::{
     install::install,
     link::link,
     list::list,
-    misc::{add_and_commit, set_repo_path, touch},
+    misc::{create_initial_commit, set_repo_path, touch},
     parser::{Args, Command},
     push::push,
     remove::remove,
@@ -24,7 +22,7 @@ fn main() -> Result<()> {
     let dotfiles = set_repo_path()?;
     let repository = git2::Repository::init(&dotfiles)?;
     touch(&dotfiles.join("dotfiles.ini"))?;
-    add_and_commit(&repository, Path::new("dotfiles.ini"), "initial commit")?;
+    create_initial_commit(&repository)?;
     let args = Args::parse();
     match args.command {
         Command::Add { file } => add(file, repository)?,

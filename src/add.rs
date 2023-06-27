@@ -18,7 +18,11 @@ fn add_dir(p0: &Path) {
 }
 
 
-pub fn add(file: String, repository: git2::Repository) -> Result<()> {
+pub fn add(
+    file: String,
+    mut config: Config,
+    repository: git2::Repository,
+) -> Result<()> {
     let mut entry = Matrix::new(
         &file,
         &PathBuf::from(&file)
@@ -28,7 +32,6 @@ pub fn add(file: String, repository: git2::Repository) -> Result<()> {
             .into_string()
             .unwrap(),
     );
-    let mut config = Config::new()?;
     for (_, prop) in &config.ini {
         debug!("checking if config contains {}", &entry.key.repr());
         if prop.contains_key(&entry.key.repr()) {

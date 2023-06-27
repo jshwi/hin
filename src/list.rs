@@ -2,8 +2,7 @@ use color_eyre::Result;
 
 use crate::config::Config;
 
-pub fn list() -> Result<()> {
-    let config = Config::new()?;
+pub fn list(config: Config) -> Result<()> {
     for (_, prop) in &config.ini {
         for (key, value) in prop.iter() {
             let mut kind = ansi_term::Color::Green.bold().paint("+");

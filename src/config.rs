@@ -1,13 +1,11 @@
 use std::{
-    env,
+    fs::OpenOptions,
     path::{Path, PathBuf},
 };
 
 use color_eyre::Result;
 use ini::Ini;
 use log::debug;
-
-use crate::DOTFILES;
 
 pub struct Config {
     pub path: PathBuf,
@@ -16,10 +14,11 @@ pub struct Config {
 
 
 impl Config {
-    pub fn new() -> Result<Self> {
-        let dotfiles = &env::var(DOTFILES)?;
-        let dotfiles = Path::new(dotfiles);
+    pub fn new(dotfiles: &Path) -> Result<Self> {
         let path = Path::new(dotfiles).join("dotfiles.ini");
+        if !path.is_file() {
+            OpenOptions::new().create(true).write(true).open(&path)?;
+        }
         debug!("config = {}", path.display());
         let mut ini = Ini::new();
         if path.is_file() {

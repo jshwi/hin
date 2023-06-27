@@ -2,8 +2,7 @@ use std::{fs, path::Path};
 
 use crate::config::Config;
 
-pub fn uninstall() -> color_eyre::Result<()> {
-    let config = Config::new()?;
+pub fn uninstall(config: Config) -> color_eyre::Result<()> {
     for (_, prop) in &config.ini {
         for (key, _) in prop.iter() {
             let key_path = shellexpand::env(&key)?.to_string();

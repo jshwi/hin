@@ -7,8 +7,11 @@ use crate::{
     gitignore::unignore,
 };
 
-pub fn link(symlink: String, target: String) -> Result<()> {
-    let mut config = Config::new()?;
+pub fn link(
+    symlink: String,
+    target: String,
+    mut config: Config,
+) -> Result<()> {
     let custom = Matrix::new(&symlink, &target);
     let mut add_to_config = false;
     for (_, prop) in &mut config.ini {

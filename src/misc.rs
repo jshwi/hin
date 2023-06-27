@@ -65,17 +65,14 @@ pub fn add_and_commit(
 }
 
 
-pub fn commit_matrix(
-    repository: &git2::Repository,
-    path: &impl FileTrait,
-    message: &str,
-) -> Result<Oid> {
-    // todo
-    //   proper author, email, and time
-    let mut index = repository.index()?;
-    if path.path().is_dir() {
-        debug!("getting files from {}", path.path().display());
-        let paths = fs::read_dir(&path.path())?;
+fn add_to_index(
+    path: &Path,
+    relpath: &Path,
+    index: &mut git2::Index,
+) -> Result<()> {
+    if path.is_dir() {
+        debug!("getting files from {}", path.display());
+        let paths = fs::read_dir(path)?;
         for p in paths {
             let p = p.unwrap().path();
             debug!("{}", p.display());
@@ -89,8 +86,21 @@ pub fn commit_matrix(
             index.add_path(&relpath)?;
         }
     } else {
-        index.add_path(&path.relpath())?;
+        index.add_path(relpath)?;
     }
+    Ok(())
+}
+
+
+pub fn commit_matrix(
+    repository: &git2::Repository,
+    path: &impl FileTrait,
+    message: &str,
+) -> Result<Oid> {
+    // todo
+    //   proper author, email, and time
+    let mut index = repository.index()?;
+    add_to_index(&path.path(), &path.relpath(), &mut index)?;
     let oid = index.write_tree()?;
     let signature = git2::Signature::now("author", "author@email")?;
     let parent_commit = find_last_commit(repository)?;
@@ -112,13 +122,23 @@ pub fn touch(path: &Path) -> Result<()> {
 }
 
 
-pub fn create_initial_commit(repo: &git2::Repository) -> Result<()> {
-    let sig = repo.signature()?;
+pub fn create_initial_commit(
+    repository: &git2::Repository,
+    path: &Path,
+) -> Result<Oid> {
+    let sig = repository.signature()?;
     let tree_id = {
-        let mut index = repo.index()?;
+        let mut index = repository.index()?;
+        add_to_index(path, Path::new(&path.file_name().unwrap()), &mut index)?;
         index.write_tree()?
     };
-    let tree = repo.find_tree(tree_id)?;
-    repo.commit(Some("HEAD"), &sig, &sig, "Initial commit", &tree, &[])?;
-    Ok(())
+    let tree = repository.find_tree(tree_id)?;
+    Ok(repository.commit(
+        Some("HEAD"),
+        &sig,
+        &sig,
+        "Initial commit",
+        &tree,
+        &[],
+    )?)
 }

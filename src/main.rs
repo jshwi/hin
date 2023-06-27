@@ -1,3 +1,5 @@
+use std::env;
+
 use clap::Parser;
 use color_eyre::Result;
 use hin::{
@@ -14,12 +16,14 @@ use hin::{
     status::status,
     undo::undo,
     uninstall::uninstall,
+    DOTFILES,
 };
 
 fn main() -> Result<()> {
     color_eyre::install()?;
     env_logger::init();
     set_repo_path()?;
+    git2::Repository::init(env::var(DOTFILES)?)?;
     let args = Args::parse();
     match args.command {
         Command::Add { file } => add(file)?,

@@ -82,8 +82,8 @@ pub fn add(file: String) -> Result<()> {
     }
     println!("added {}", &entry.key.path().display());
     commit(
-        &entry.value.path(),
-        &format!("add {}", entry.key.path().display()),
+        &entry.value.relpath(),
+        &format!("add {}", entry.key.relpath().display()),
     )?;
     Ok(())
 }

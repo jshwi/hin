@@ -65,6 +65,7 @@ fn add_to_index(
     } else {
         index.add_path(relpath)?;
     }
+    index.add_path(Path::new("dotfiles.ini"))?;
     Ok(())
 }
 

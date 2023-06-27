@@ -10,6 +10,7 @@ use log::debug;
 use crate::DOTFILES;
 
 pub struct Git {
+    pub dir: PathBuf,
     repository: git2::Repository,
 }
 
@@ -17,6 +18,7 @@ pub struct Git {
 impl Git {
     pub fn new(dotfiles: &Path) -> Result<Git> {
         Ok(Self {
+            dir: dotfiles.join(".git"),
             repository: git2::Repository::init(dotfiles)?,
         })
     }
@@ -27,6 +29,7 @@ impl Git {
             .head()?
             .resolve()?
             .peel(git2::ObjectType::Commit)?;
+
         Ok(obj
             .into_commit()
             .map_err(|_| git2::Error::from_str("Couldn't find commit"))?)

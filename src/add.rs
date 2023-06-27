@@ -9,8 +9,8 @@ use log::debug;
 use crate::{
     config::Config,
     files::{FileTrait, Matrix},
+    git::commit_matrix,
     gitignore::unignore,
-    misc::commit_matrix,
 };
 
 fn add_dir(p0: &Path) {

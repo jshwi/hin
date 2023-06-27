@@ -3,6 +3,7 @@ pub mod clone;
 pub mod commit;
 pub mod config;
 pub mod files;
+pub mod git;
 pub mod gitignore;
 pub mod install;
 pub mod link;

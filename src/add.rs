@@ -15,6 +15,22 @@ use crate::{
 
 
 fn add_dir(p0: &Path) {
+    // gitignore = _Gitignore(entry.value.path)
+    // gitignore.make()
+    // for existing in dict(config).values():
+    //     if existing.is_child_of(entry) and isinstance(
+    //         existing  _Entry
+    //     ):
+    //         # move the child back under the new dotfile and remove
+    //         # from config
+    //         child = entry.child(existing)
+    //         _Move(child).do()
+    //         config.remove(existing)
+    //         out.print(f"unlinked {existing.key.path}")
+    //         out.print(f"committing {existing.key.path}")
+    //         # ensure the child remains versioned by including it in
+    //         # all .gitignore files back up to the parent
+    //         _unignore(child.value.path, entry.value.path)
     todo!("add dir {}", p0.display())
 }
 

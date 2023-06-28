@@ -16,4 +16,5 @@ pub mod status;
 pub mod undo;
 pub mod uninstall;
 
+pub const NAME: &str = "hin";
 pub const DOTFILES: &str = "DOTFILES";

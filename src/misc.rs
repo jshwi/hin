@@ -3,17 +3,16 @@ use std::{env, fs, path::PathBuf};
 use color_eyre::Result;
 use log::debug;
 
-use crate::DOTFILES;
+use crate::{DOTFILES, NAME};
 
 
 pub fn set_repo_path() -> Result<PathBuf> {
-    let name: String = env::var("CARGO_PKG_NAME")?;
-    debug!("CARGO_PKG_NAME={}", name);
+    debug!("CARGO_PKG_NAME={}", NAME);
     let repo = env::var(DOTFILES);
     let base_dirs = directories::BaseDirs::new().unwrap();
     let user_data_dir = base_dirs.data_dir();
     env::set_var("USER_DATA_DIR", user_data_dir);
-    let default = user_data_dir.join(name);
+    let default = user_data_dir.join(NAME);
     if repo.is_err() {
         debug!("DOTFILES not set, defaulting to {}", default.display());
         env::set_var(DOTFILES, default)

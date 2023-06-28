@@ -22,6 +22,7 @@ use hin::{
     uninstall::uninstall,
 };
 
+
 fn main() -> Result<()> {
     color_eyre::install()?;
     env_logger::init();

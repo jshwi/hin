@@ -2,6 +2,7 @@ use std::{fs, path::Path};
 
 use crate::config::Config;
 
+
 pub fn uninstall(config: Config) -> color_eyre::Result<()> {
     for (_, prop) in &config.ini {
         for (key, _) in prop.iter() {

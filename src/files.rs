@@ -8,6 +8,7 @@ use regex::Regex;
 
 use crate::DOTFILES;
 
+
 pub trait FileTrait {
     fn string(&self) -> &String;
     fn env(&self) -> &String;
@@ -18,9 +19,11 @@ pub trait FileTrait {
             self.string().to_string().replace(&format!("{}/", str_root), ""),
         )
     }
+
     fn path(&self) -> PathBuf {
         PathBuf::from(&self.root()).join(&self.relpath())
     }
+
     fn repr(&self) -> String {
         format!(
             "${}/{}",

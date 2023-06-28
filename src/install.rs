@@ -9,6 +9,7 @@ use crate::{
     DOTFILES,
 };
 
+
 pub fn install(config: Config) -> Result<()> {
     let dotfiles = &env::var(DOTFILES)?;
     let path = Path::new(dotfiles).join("dotfiles.ini");

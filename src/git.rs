@@ -9,6 +9,7 @@ use log::debug;
 
 use crate::DOTFILES;
 
+
 pub struct Git {
     pub dir: PathBuf,
     repository: git2::Repository,

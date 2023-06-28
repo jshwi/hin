@@ -7,6 +7,7 @@ use color_eyre::Result;
 use ini::Ini;
 use log::debug;
 
+
 pub struct Config {
     pub path: PathBuf,
     pub ini: Ini,

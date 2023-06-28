@@ -125,8 +125,6 @@ impl Matrix {
     pub fn linksrc(&self) -> Result<Self> {
         let value = &self.key.path().read_link()?;
         if !value.exists() {
-            // todo
-            //   make this an error
             panic!("{} is a dangling symlink", &value.display())
         }
         let value = String::from(value.to_str().unwrap());

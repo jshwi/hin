@@ -20,14 +20,15 @@ impl Git {
         let dir = dotfiles.join(".git");
         if !dir.is_dir() {
             let git = Self {
-                dir: dotfiles.join(".git"),
+                dir,
                 repository: git2::Repository::init(dotfiles)?,
             };
+            git.add(vec!["dotfiles.ini".to_string()], false, false, false)?;
             git.initial_commit()?;
             Ok(git)
         } else {
             Ok(Self {
-                dir: dotfiles.join(".git"),
+                dir,
                 repository: git2::Repository::open(dotfiles)?,
             })
         }
@@ -77,13 +78,9 @@ impl Git {
         Ok(index.write_tree()?)
     }
 
-    pub fn commit(
-        &self,
-        path: Option<&Path>,
-        message: &str,
-    ) -> Result<git2::Oid> {
+    pub fn commit(&self, message: &str) -> Result<git2::Oid> {
         let signature = self.repository.signature()?;
-        let oid = self.add_to_index(path)?;
+        let oid = self.add_to_index(None)?;
         let parent_commit = self.find_last_commit()?;
         let tree = self.repository.find_tree(oid)?;
         Ok(self.repository.commit(
@@ -108,5 +105,43 @@ impl Git {
             &tree,
             &[],
         )?)
+    }
+
+    pub fn add(
+        &self,
+        spec: Vec<String>,
+        dry_run: bool,
+        verbose: bool,
+        update: bool,
+    ) -> Result<()> {
+        let mut index = self.repository.index()?;
+        let cb = &mut |path: &Path, _matched_spec: &[u8]| -> i32 {
+            let status = self.repository.status_file(path).unwrap();
+            let ret = if status.contains(git2::Status::WT_MODIFIED)
+                || status.contains(git2::Status::WT_NEW)
+            {
+                println!("add '{}'", path.display());
+                0
+            } else {
+                1
+            };
+            if dry_run {
+                1
+            } else {
+                ret
+            }
+        };
+        let cb = if verbose || update {
+            Some(cb as &mut git2::IndexMatchedPath)
+        } else {
+            None
+        };
+        if update {
+            index.update_all(spec.iter(), cb)?;
+        } else {
+            index.add_all(spec.iter(), git2::IndexAddOption::DEFAULT, cb)?;
+        }
+        index.write()?;
+        Ok(())
     }
 }

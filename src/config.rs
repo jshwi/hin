@@ -32,4 +32,9 @@ impl Config {
         self.ini.with_section(None::<String>).set(key, value);
         self.ini.write_to_file(&self.path).unwrap();
     }
+
+    pub fn remove(&mut self, key: &String) {
+        self.ini.with_section(None::<String>).delete(key);
+        self.ini.write_to_file(&self.path).unwrap();
+    }
 }

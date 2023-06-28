@@ -1,7 +1,4 @@
-use std::{
-    fs,
-    path::{Path, PathBuf},
-};
+use std::{fs, path::PathBuf};
 
 use color_eyre::Result;
 use log::debug;
@@ -10,30 +7,8 @@ use crate::{
     config::Config,
     files::{FileTrait, Matrix},
     git::Git,
-    gitignore::unignore,
+    gitignore::{unignore, Gitignore},
 };
-
-
-fn add_dir(p0: &Path) {
-    // gitignore = _Gitignore(entry.value.path)
-    // gitignore.make()
-    // for existing in dict(config).values():
-    //     if existing.is_child_of(entry) and isinstance(
-    //         existing  _Entry
-    //     ):
-    //         # move the child back under the new dotfile and remove
-    //         # from config
-    //         child = entry.child(existing)
-    //         _Move(child).do()
-    //         config.remove(existing)
-    //         out.print(f"unlinked {existing.key.path}")
-    //         out.print(f"committing {existing.key.path}")
-    //         # ensure the child remains versioned by including it in
-    //         # all .gitignore files back up to the parent
-    //         _unignore(child.value.path, entry.value.path)
-    todo!("add dir {}", p0.display())
-}
-
 
 pub fn add(file: String, mut config: Config, git: Git) -> Result<()> {
     let mut entry = Matrix::new(
@@ -63,12 +38,47 @@ pub fn add(file: String, mut config: Config, git: Git) -> Result<()> {
         &entry.key.path().display(),
         &entry.value.path().display()
     );
+    let mut remove_from = false;
     match fs::rename(&entry.key.path(), &entry.value.path()) {
         Ok(_) => {
             if entry.key.path().is_dir() {
                 // add .gitignore files and check for any children that
                 // might already be versioned
-                add_dir(&entry.key.path())
+                let gitignore = Gitignore::new(&entry.value.path());
+                gitignore.make();
+                for (_, prop) in &config.ini {
+                    for (key, value) in prop.iter() {
+                        let existing =
+                            Matrix::new(&key.to_string(), &value.to_string());
+                        if existing.is_child_of(&entry)
+                            && existing.value.repr().starts_with("$DOTFILES")
+                        {
+                            // move the child back under the new dotfile and
+                            // remove from config
+                            let child = entry.child(&existing);
+                            fs::rename(child.key.path(), child.value.path())
+                                .unwrap();
+                            remove_from = true;
+                            println!(
+                                "unlinked {}",
+                                existing.key.path().display()
+                            );
+                            println!(
+                                "committing {}",
+                                existing.key.path().display()
+                            );
+                            // ensure the child remains versioned by including
+                            // it in all .gitignore
+                            // files back up to the parent
+                            unignore(&child.value.path(), &entry.value.path());
+                        }
+                    }
+                }
+            }
+            if remove_from {
+                config.remove(
+                    &entry.key.path().into_os_string().into_string().unwrap(),
+                );
             }
             config.add(&entry.key.repr(), &entry.value.repr());
             debug!(

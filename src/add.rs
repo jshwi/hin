@@ -53,8 +53,8 @@ pub fn add(file: String, mut config: Config, git: Git) -> Result<()> {
                         if existing.is_child_of(&entry)
                             && existing.value.repr().starts_with("$DOTFILES")
                         {
-                            // move the child back under the new dotfile and
-                            // remove from config
+                            // move the child back under the new dotfile
+                            // and remove from config
                             let child = entry.child(&existing);
                             fs::rename(child.key.path(), child.value.path())
                                 .unwrap();
@@ -67,9 +67,9 @@ pub fn add(file: String, mut config: Config, git: Git) -> Result<()> {
                                 "committing {}",
                                 existing.key.path().display()
                             );
-                            // ensure the child remains versioned by including
-                            // it in all .gitignore
-                            // files back up to the parent
+                            // ensure the child remains versioned by
+                            // including it in all .gitignore files back
+                            // up to the parent
                             unignore(&child.value.path(), &entry.value.path());
                         }
                     }

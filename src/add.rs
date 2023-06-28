@@ -79,15 +79,10 @@ pub fn add(file: String, mut config: Config, git: Git) -> Result<()> {
             }
         }
     }
-    git.add(
-        vec![
-            "dotfiles.ini".to_string(),
-            entry.value.relpath().into_os_string().into_string().unwrap(),
-        ],
-        false,
-        false,
-        false,
-    )?;
+    git.add(vec![
+        "dotfiles.ini".to_string(),
+        entry.value.relpath().into_os_string().into_string().unwrap(),
+    ])?;
     git.commit(&format!("add {}", entry.key.relpath().display()))?;
     println!("added {}", &entry.key.path().display());
     Ok(())

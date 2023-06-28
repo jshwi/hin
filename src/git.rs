@@ -23,7 +23,7 @@ impl Git {
                 dir,
                 repository: git2::Repository::init(dotfiles)?,
             };
-            git.add(vec!["dotfiles.ini".to_string()], false, false, false)?;
+            git.add(vec!["dotfiles.ini".to_string()])?;
             git.initial_commit()?;
             Ok(git)
         } else {
@@ -107,40 +107,9 @@ impl Git {
         )?)
     }
 
-    pub fn add(
-        &self,
-        spec: Vec<String>,
-        dry_run: bool,
-        verbose: bool,
-        update: bool,
-    ) -> Result<()> {
+    pub fn add(&self, spec: Vec<String>) -> Result<()> {
         let mut index = self.repository.index()?;
-        let cb = &mut |path: &Path, _matched_spec: &[u8]| -> i32 {
-            let status = self.repository.status_file(path).unwrap();
-            let ret = if status.contains(git2::Status::WT_MODIFIED)
-                || status.contains(git2::Status::WT_NEW)
-            {
-                println!("add '{}'", path.display());
-                0
-            } else {
-                1
-            };
-            if dry_run {
-                1
-            } else {
-                ret
-            }
-        };
-        let cb = if verbose || update {
-            Some(cb as &mut git2::IndexMatchedPath)
-        } else {
-            None
-        };
-        if update {
-            index.update_all(spec.iter(), cb)?;
-        } else {
-            index.add_all(spec.iter(), git2::IndexAddOption::DEFAULT, cb)?;
-        }
+        index.add_all(spec.iter(), git2::IndexAddOption::DEFAULT, None)?;
         index.write()?;
         Ok(())
     }

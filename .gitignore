@@ -3,6 +3,7 @@
 *venv
 .DS_Store
 .env
+/target
 __pycache__/
 dist/
 node_modules/

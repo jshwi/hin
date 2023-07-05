@@ -26,6 +26,7 @@ policies:
           - security
           - style
           - test
+          - todo
           - remove
         scopes:
           - deps

@@ -82,7 +82,6 @@ html_theme_options = {
     "site_url": "https://hin.readthedocs.io/",
     "repo_url": "https://github.com/jshwi/hin/",
     "repo_name": "hin",
-    "repo_type": "github",
     "edit_uri": "blob/master/docs",
     "globaltoc_collapse": True,
     "features": [

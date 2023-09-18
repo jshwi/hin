@@ -1,5 +1,5 @@
 sphinx-click==5.0.1
 sphinx-immaterial==0.11.7
-sphinx-toolbox==3.4.0
+sphinx-toolbox==3.5.0
 sphinxcontrib-fulltoc==1.2.0
 sphinxcontrib-programoutput==0.17

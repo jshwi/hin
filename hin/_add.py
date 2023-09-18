@@ -47,9 +47,9 @@ def _add_child(entry: _Entry, config: _Config) -> bool:
 def add(config: _Config, out: _Console, file: str) -> str:
     """Add new FILE to version control.
 
-    If the file is a symlink not related to the dotfile repo
-    then the source of the symlink will be added. The original path will
-    be symlinked to the versioned file.
+    If the file is a symlink not related to the dotfile repo then the
+    source of the symlink will be added. The original path will be
+    symlinked to the versioned file.
 
     If the source file is a child of an already added directory it will
     be added as part of the directory. If the source file is a child of

@@ -91,10 +91,10 @@ def repository(func: _Command) -> _Command:
     """
 
     class _Stash:
-        def __init__(self, git: _git.Git) -> None:
-            self._git = git
+        def __init__(self, repo: _git.Repo) -> None:
+            self._repo = repo
             self._stashed = False
-            output = self._git.stash()
+            output = self._repo.git.stash()
             if "No local changes to save" not in output:
                 self._stashed = True
 
@@ -108,7 +108,7 @@ def repository(func: _Command) -> _Command:
             exc_tb: _TracebackType,
         ) -> None:
             if self._stashed:
-                self._git.stash("pop")
+                self._repo.git.stash("pop")
 
     @_functools.wraps(func)
     @console
@@ -133,7 +133,7 @@ def repository(func: _Command) -> _Command:
             repo.git.add(path)
             repo.index.commit("Initial commit", author=author)
 
-        with _Stash(repo.git):
+        with _Stash(repo):
             if "repo" in _inspect.getfullargspec(func).args:
                 kwargs["repo"] = repo
 

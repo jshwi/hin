@@ -1271,7 +1271,7 @@ def test_ref_key_in_path(
     make_tree({P1.dst: {P2.src: P2.contents}})
     cli((d.main, [ADD, P1.dst]))
     monkeypatch.chdir(some_path)
-    cli((d.main, ["status", args.file, P1.dst]))
+    cli((d.main, [STATUS, args.file, P1.dst]))
 
 
 def test_list(cli: FixtureCli, make_tree: FixtureMakeTree) -> None:

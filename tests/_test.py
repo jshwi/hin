@@ -1617,3 +1617,23 @@ def test_commit_update_message_path(
         str(path)
         in git.Repo(DOTFILES).git.log("HEAD", format="%B", max_count=1).strip()
     )
+
+
+def test_add_already_stashed(
+    cli: FixtureCli, make_tree: FixtureMakeTree
+) -> None:
+    """Test `hin status` produces correct result when stash exists.
+
+    :param cli: Cli runner for testing.
+    :param make_tree: Make file tree.
+    """
+    make_tree({P1.dst: P1.contents, P2.dst: P2.contents})
+    cli((d.main, [ADD, P1.dst]))
+    result = cli((d.main, [STATUS]))
+    assert "no changes have been made to any dotfiles" in result.stdout
+    make_tree({P3.src: P3.contents}, DOTFILES)
+    repo = git.Repo(DOTFILES)
+    repo.git.add(DOTFILES.absolute())
+    repo.git.stash()
+    result = cli((d.main, [STATUS]))
+    assert "no changes have been made to any dotfiles" in result.stdout

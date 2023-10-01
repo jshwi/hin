@@ -80,7 +80,7 @@ def status(
         value = entry.value.path
         no_change_message = f"no changes have been made to {entry.key.path}"
 
-    try:
+    if repo.stashed:  # type: ignore
         repo.git.restore("--source", "stash@{0}", "--", value)
         output = repo.git.status(value)
         if "nothing to commit, working tree clean" not in output:
@@ -88,7 +88,5 @@ def status(
 
         repo.git.reset(hard=True)
         return
-    except _git.GitCommandError:
-        pass
 
     out.print(no_change_message)

@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 [Unreleased](https://github.com/jshwi/hin/compare/v0.3.0...HEAD)
 ------------------------------------------------------------------------
+### Fixed
+- do not pop pre-existing stash when checking status
 
 [0.3.0](https://github.com/jshwi/hin/releases/tag/v0.3.0) - 2023-06-18
 ------------------------------------------------------------------------

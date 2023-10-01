@@ -93,10 +93,10 @@ def repository(func: _Command) -> _Command:
     class _Stash:
         def __init__(self, repo: _git.Repo) -> None:
             self._repo = repo
-            self._stashed = False
+            self._repo.stashed = False  # type: ignore
             output = self._repo.git.stash()
             if "No local changes to save" not in output:
-                self._stashed = True
+                self._repo.stashed = True  # type: ignore
 
         def __enter__(self) -> _Stash:  # pylint: disable=undefined-variable
             return self
@@ -107,7 +107,7 @@ def repository(func: _Command) -> _Command:
             exc_val: BaseException | None,
             exc_tb: _TracebackType,
         ) -> None:
-            if self._stashed:
+            if self._repo.stashed:  # type: ignore
                 self._repo.git.stash("pop")
 
     @_functools.wraps(func)

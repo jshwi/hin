@@ -94,7 +94,7 @@ restview = "^3.0.0"
 sphinx-click = "^5.0.1"
 sphinx-immaterial = "0.11.7"
 sphinx-toolbox = "^3.5.0"
-templatest = "^0.8.0"
+templatest = "^0.10.0"
 
 [tool.poetry.scripts]
 hin = "hin.__main__:main"

@@ -19,17 +19,26 @@ from click_help_colors import HelpColorsGroup as _HelpColorsGroup
 from rich.console import Console as _Console
 
 from . import _decorators
+from ._actions import Move as _Move
 from ._add import add as _add
 from ._clone import clone as _clone
 from ._commit import commit as _commit
+from ._config import Config as _Config
 from ._file import Entry as _Entry
+from ._gitignore import Gitignore as _Gitignore
 from ._link import link_ as _link
 from ._list import list_ as _list
 from ._push import push as _push
-from ._remove import remove as _remove
 from ._status import status as _status
 from ._undo import undo as _undo
 from ._version import __version__
+
+
+class Object(_t.TypedDict):
+    """Dict-like class container."""
+
+    config: _Config
+    console: _Console
 
 
 def _help_option(func: _t.Callable[..., _t.Optional[str]]):
@@ -45,8 +54,14 @@ def _help_option(func: _t.Callable[..., _t.Optional[str]]):
 @_click.version_option(
     __version__, "-v", "--version", message="%(prog)s version %(version)s"
 )
-def cli() -> None:
-    """Dotfile manager."""
+@_click.pass_context
+def cli(ctx: _click.Context) -> None:
+    """Dotfile manager.
+
+    \f
+
+    :param ctx: Context object.
+    """
     # parse git variables ahead of time in case .gitconfig is a
     # dotfile
     user = _getpass.getuser()
@@ -64,6 +79,10 @@ def cli() -> None:
         _sys.excepthook = lambda x, y, _: err.print(
             f"[red bold]{x.__name__}[/red bold]: {y}"
         )
+
+    ctx.ensure_object(dict)
+    ctx.obj["config"] = _Config()
+    ctx.obj["console"] = _Console(soft_wrap=bool(_e.get("HIN_DEBUG") == "1"))
 
 
 @cli.command("install")
@@ -127,13 +146,35 @@ def __link(link: str, target: str) -> None:
         _link(link, target)
 
 
-@cli.command("remove", help=_remove.__doc__)
+@cli.command("remove")
 @_help_option
 @_click.argument("file")
 @_decorators.uninstall(quiet=True)
 @_decorators.install(quiet=True)
-def __remove(file: str) -> None:
-    _remove(file)
+@_click.pass_obj
+@_decorators.repository
+def __remove(obj: Object, file: str) -> str:
+    """Remove FILE from version control.
+
+    All links that point to the file, and any links to those links, will
+    be removed.
+
+    If the dotfile is not a link to another dotfile then the checked in
+    file or directory will be moved back to its original location in its
+    place.
+
+    Changes will be committed.
+    """
+    matrix = obj["config"][file]
+    obj["config"].remove_links(matrix)
+    if isinstance(matrix, _Entry):
+        if matrix.value.path.is_dir():
+            _Gitignore(matrix.value.path).remove()
+
+        _Move(matrix).undo()
+
+    obj["console"].print(f"removed {matrix.key.path} from dotfiles")
+    return f"remove {file}"
 
 
 @cli.command("undo", help=_undo.__doc__)

@@ -21,6 +21,7 @@ skip-magic-trailing-comma = true
 ignore_strings = [
   "DEFAULT",
   "DOTFILES",
+  "config",
   "file",
   "utf-8"
 ]

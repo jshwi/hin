@@ -22,6 +22,7 @@ ignore_strings = [
   "DEFAULT",
   "DOTFILES",
   "config",
+  "console",
   "file",
   "utf-8"
 ]

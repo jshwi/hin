@@ -21,7 +21,6 @@ from rich.console import Console as _Console
 from . import _decorators
 from ._actions import Move as _Move
 from ._add import add as _add
-from ._clone import clone as _clone
 from ._commit import commit as _commit
 from ._config import Config as _Config
 from ._file import Entry as _Entry
@@ -185,12 +184,21 @@ def __undo() -> None:
     _undo()
 
 
-@cli.command("clone", help=_clone.__doc__)
+@cli.command("clone")
 @_click.argument("url")
 @_click.option("-b", "--branch", help="Branch to clone (default: master).")
 @_help_option
-def __clone(url: str, branch: str | None) -> None:
-    _clone(url, branch)
+@_click.pass_obj
+def __clone(obj: Object, url: str, branch: str | None) -> None:
+    """Clone a dotfile repository from a URL."""
+    kwargs = {}
+    if branch is not None:
+        kwargs["branch"] = branch
+
+    path = _Path(_e["DOTFILES"])
+    obj["console"].print(f"cloning '{url.split('/')[-1]}' into {path}")
+    _git.Repo.clone_from(url, path, **kwargs)  # type: ignore
+    obj["console"].print("[green bold]cloned dotfile repo[/green bold]")
 
 
 @cli.command("push", help=_push.__doc__)

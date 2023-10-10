@@ -6,6 +6,7 @@ hin._main
 from __future__ import annotations
 
 import getpass as _getpass
+import re as _re
 import socket as _socket
 import sys as _sys
 import typing as _t
@@ -27,7 +28,6 @@ from ._file import Custom as _Custom
 from ._file import Entry as _Entry
 from ._gitignore import Gitignore as _Gitignore
 from ._link import link_ as _link
-from ._status import status as _status
 from ._version import __version__
 
 
@@ -280,11 +280,76 @@ def __push(obj: Object, remote: str | None, repo: _git.Repo) -> None:
         raise err
 
 
-@cli.command("status", help=_status.__doc__)
+class _PathRef:
+    def __init__(self, string: str) -> None:
+        self._kind = ""
+        self._path = string
+        words = string.split()
+        if len(words) > 1:
+            self._kind = words[0]
+            self._path = words[1]
+
+    @property
+    def kind(self) -> str:
+        """Type of change."""
+        return self._kind
+
+    @property
+    def path(self) -> _Path:
+        """Changed path."""
+        return _Path(self._path)
+
+
+def _print_paths(line: str, config: _Config) -> None:
+    if line.startswith("\t"):
+        path_ref = _PathRef(_re.sub(" +", " ", line).strip())
+        for existing in config.values():
+            if str(path_ref.path).startswith(str(existing.value.relpath)):
+                print(
+                    path_ref.kind,
+                    existing.key.relpath
+                    / str(_Path(*path_ref.path.parts[1:])),
+                )
+
+
+def _print_status(out: _Console, output: str, config: _Config) -> None:
+    for line in output.splitlines():
+        if _re.match(r"((\w+(?: \w+)*):)", line):
+            out.print(f"[green bold]{line}[/green bold]")
+
+        _print_paths(line, config)
+
+
+@cli.command("status")
 @_help_option
 @_click.option("-f", "--file", help="specific dotfile to check")
-def __status(file: str | None) -> None:
-    _status(file)
+@_click.pass_obj
+@_decorators.repository
+def __status(obj: Object, file: str | None, repo: _git.Repo) -> None:
+    """Check version status.
+
+    \f
+
+    Restore item chosen to check status for as `repository` decorator
+    isolates user made changes from dotfile manager changes.
+    """
+    value = _Path(_e["DOTFILES"])
+    no_change_message = "no changes have been made to any dotfiles"
+    if file is not None:
+        entry = obj["config"][file]
+        value = entry.value.path
+        no_change_message = f"no changes have been made to {entry.key.path}"
+
+    if repo.stashed:  # type: ignore
+        repo.git.restore("--source", "stash@{0}", "--", value)
+        output = repo.git.status(value)
+        if "nothing to commit, working tree clean" not in output:
+            _print_status(obj["console"], output, obj["config"])
+
+        repo.git.reset(hard=True)
+        return
+
+    obj["console"].print(no_change_message)
 
 
 @cli.command("commit")

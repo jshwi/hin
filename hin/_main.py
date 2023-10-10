@@ -26,7 +26,6 @@ from ._file import Custom as _Custom
 from ._file import Entry as _Entry
 from ._gitignore import Gitignore as _Gitignore
 from ._link import link_ as _link
-from ._push import push as _push
 from ._status import status as _status
 from ._undo import undo as _undo
 from ._version import __version__
@@ -200,11 +199,60 @@ def __clone(obj: Object, url: str, branch: str | None) -> None:
     obj["console"].print("[green bold]cloned dotfile repo[/green bold]")
 
 
-@cli.command("push", help=_push.__doc__)
+@cli.command("push")
 @_help_option
 @_click.option("-r", "--remote", help="set remote upstream")
-def __push(remote: str | None) -> None:
-    _push(remote)
+@_click.pass_obj
+@_decorators.repository
+def __push(obj: Object, remote: str | None, repo: _git.Repo) -> None:
+    """Push changes to remote."""
+    origin = "origin"
+    if remote is not None:
+        # only add if no remote has been added yet
+        # if you re-add the remote you get the following:
+        #
+        #     $ git status
+        #     On branch master
+        #     nothing to commit, working tree clean
+        #
+        # instead of:
+        #
+        #     $ git status
+        #     On branch master
+        #     Your branch is up to date with 'origin/master'
+        #
+        #     nothing to commit, working tree clean
+        #
+        # "Your branch is up to date with" is the unambiguous string to
+        # look for to confirm that there is nothing to push
+        if not (
+            repo.git.remote() == origin
+            and repo.git.remote("get-url", origin) == remote
+        ):
+            try:
+                repo.git.remote("remove", origin)
+            except _git.GitCommandError:
+                pass
+
+            repo.git.remote("add", origin, remote)
+
+    try:
+        if "Your branch is up to date with" in repo.git.status():
+            obj["console"].print("no changes to push to remote")
+        else:
+            repo.git.push(origin, "master", set_upstream=True)
+            obj["console"].print(
+                "[green bold]changes pushed to remote[/green bold]"
+            )
+    except _git.GitCommandError as err:
+        if "'origin' does not appear to be a git repository" in str(err):
+            raise RuntimeError(
+                "'origin' does not appear to be a git repository\n"
+                "try running `hin push --remote=<REMOTE>` to set origin"
+                " upstream"
+            ) from err
+
+        raise err
 
 
 @cli.command("status", help=_status.__doc__)

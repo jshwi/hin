@@ -31,8 +31,6 @@ from ._status import status as _status
 from ._undo import undo as _undo
 from ._version import __version__
 
-_NAME = __name__.split(".", maxsplit=1)[0]
-
 
 def _help_option(func: _t.Callable[..., _t.Optional[str]]):
     return _click.help_option("-h", "--help")(func)
@@ -55,7 +53,7 @@ def cli() -> None:
     email = f"{user}@{_socket.gethostname()}"
     gitconfig = _git.GitConfigParser()
     user_data_dir = _appdirs.user_data_dir()
-    dotfiles = str(_Path(user_data_dir) / _NAME)
+    dotfiles = str(_Path(user_data_dir) / __package__)
     _e["USER_DATA_DIR"] = user_data_dir
     _e["DOTFILES"] = _e.get("DOTFILES", dotfiles)
     _e["GIT_AUTHOR_NAME"] = str(gitconfig.get_value("user", "name", user))

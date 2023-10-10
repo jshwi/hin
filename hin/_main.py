@@ -19,6 +19,7 @@ from click_help_colors import HelpColorsGroup as _HelpColorsGroup
 from rich.console import Console as _Console
 
 from . import _decorators
+from ._actions import Hist as _Hist
 from ._actions import Move as _Move
 from ._add import add as _add
 from ._config import Config as _Config
@@ -27,7 +28,6 @@ from ._file import Entry as _Entry
 from ._gitignore import Gitignore as _Gitignore
 from ._link import link_ as _link
 from ._status import status as _status
-from ._undo import undo as _undo
 from ._version import __version__
 
 
@@ -36,6 +36,7 @@ class Object(_t.TypedDict):
 
     config: _Config
     console: _Console
+    hist: _Hist
 
 
 def _help_option(func: _t.Callable[..., _t.Optional[str]]):
@@ -81,6 +82,7 @@ def cli(ctx: _click.Context) -> None:
     ctx.obj.update(
         {
             "config": _Config(),
+            "hist": _Hist(),
             "console": _Console(soft_wrap=bool(_e.get("HIN_DEBUG") == "1")),
         }
     )
@@ -178,12 +180,31 @@ def __remove(obj: Object, file: str) -> str:
     return f"remove {file}"
 
 
-@cli.command("undo", help=_undo.__doc__)
+@cli.command("undo")
 @_help_option
 @_decorators.uninstall(quiet=True)
 @_decorators.install(quiet=True)
-def __undo() -> None:
-    _undo()
+@_click.pass_obj
+@_decorators.repository
+def __undo(obj: Object, repo: _git.Repo) -> str | None:
+    """Revert previous commit and actions."""
+    revision = "HEAD"
+    prev_revision = f"{revision}^"
+    message = repo.git.log(revision, format="%B", max_count=1).strip()
+    # check out dotfiles.ini to the previous commit
+    repo.git.checkout(prev_revision, "--", obj["config"].path)
+    commit = repo.git.rev_parse("--short", prev_revision)
+    try:
+        obj["hist"].run(commit)
+        # check out .gitignore files to the previous commit
+        for path in _Path(_e["DOTFILES"]).glob("**/.gitignore"):
+            repo.git.checkout(prev_revision, "--", path)
+
+    except KeyError:
+        pass
+
+    obj["console"].print(f"reverted to {commit}")
+    return f'revert "{message}"'
 
 
 @cli.command("clone")

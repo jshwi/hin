@@ -78,8 +78,12 @@ def cli(ctx: _click.Context) -> None:
         )
 
     ctx.ensure_object(dict)
-    ctx.obj["config"] = _Config()
-    ctx.obj["console"] = _Console(soft_wrap=bool(_e.get("HIN_DEBUG") == "1"))
+    ctx.obj.update(
+        {
+            "config": _Config(),
+            "console": _Console(soft_wrap=bool(_e.get("HIN_DEBUG") == "1")),
+        }
+    )
 
 
 @cli.command("install")

@@ -22,10 +22,10 @@ from . import _decorators
 from ._actions import Move as _Move
 from ._add import add as _add
 from ._config import Config as _Config
+from ._file import Custom as _Custom
 from ._file import Entry as _Entry
 from ._gitignore import Gitignore as _Gitignore
 from ._link import link_ as _link
-from ._list import list_ as _list
 from ._push import push as _push
 from ._status import status as _status
 from ._undo import undo as _undo
@@ -249,10 +249,19 @@ def __commit(obj: Object, file: str, repo: _git.Repo) -> str | None:
     return None
 
 
-@cli.command("list", help=_list.__doc__)
+@cli.command("list")
 @_help_option
-def __list_() -> None:
-    _list()
+@_click.pass_obj
+def __list_(obj: Object) -> None:
+    """List all versioned dotfiles."""
+    for matrix in obj["config"].values():
+        kind = "[green bold]+[/green bold]"
+        value = str(matrix.key.path)
+        if isinstance(matrix, _Custom):
+            kind = "[cyan bold]=[/cyan bold]"
+            value += f" -> {matrix.value.path}"
+
+        obj["console"].print(kind, value)
 
 
 # run git in dotfiles repo

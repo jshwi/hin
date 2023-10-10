@@ -21,7 +21,6 @@ from rich.console import Console as _Console
 from . import _decorators
 from ._actions import Move as _Move
 from ._add import add as _add
-from ._commit import commit as _commit
 from ._config import Config as _Config
 from ._file import Entry as _Entry
 from ._gitignore import Gitignore as _Gitignore
@@ -215,11 +214,39 @@ def __status(file: str | None) -> None:
     _status(file)
 
 
-@cli.command("commit", help=_commit.__doc__)
+@cli.command("commit")
 @_help_option
 @_click.argument("file")
-def __commit(file: str) -> None:
-    _commit(file)
+@_click.pass_obj
+@_decorators.repository
+def __commit(obj: Object, file: str, repo: _git.Repo) -> str | None:
+    """Commit changes to FILE.
+
+    \f
+
+    Restore item chosen to commit as `repository` decorator stashes, and
+    then commits changes, made within wrapped function before popping
+    the stash.
+    """
+    try:
+        entry = _Entry.new(file)
+        # add commit message here because key changes if `entry` is a
+        # child of an existing dotfile
+        commit_message = f"update {entry.key.relpath}"
+        for existing in obj["config"].values():
+            if entry.is_child_of(existing):
+                entry = existing.child(existing)
+
+        repo.git.restore("--source", "stash@{0}", "--", entry.value.path)
+        if repo.git.diff("HEAD", "--", entry.value.path):
+            repo.git.add(entry.value.path)
+            return commit_message
+
+    except _git.GitCommandError:
+        pass
+
+    obj["console"].print("nothing to commit")
+    return None
 
 
 @cli.command("list", help=_list.__doc__)

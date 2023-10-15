@@ -27,7 +27,6 @@ from ._file import Custom as _Custom
 from ._file import Entry as _Entry
 from ._gitignore import Gitignore as _Gitignore
 from ._gitignore import unignore as _unignore
-from ._link import link_ as _link
 from ._version import __version__
 
 
@@ -179,6 +178,32 @@ def _add(config: _Config, out: _Console, file: str) -> str:
     return f"add {entry.key.relpath}"
 
 
+@_decorators.repository
+def _link(config: _Config, out: _Console, link: str, target: str) -> str:
+    custom = _Custom(link, target)
+    if str(custom.key) in config:
+        raise TypeError(f"{custom.key.path} already added")
+
+    for existing in config.values():
+        # exclude path to child file from the .gitignore file to be
+        # committed so that the link is valid
+        if custom.is_child_of(existing) and custom.realsrc.value.path.exists():
+            _unignore(custom.realsrc.value.path, existing.realsrc.value.path)
+
+        # custom link is not linked to or a descendent of the checked in
+        # file
+        elif not custom.is_linked_to(existing):
+            continue
+
+        config.add(custom)
+        out.print(f"linked {custom.key.path} to {custom.value.path}")
+        return f"add {custom.key.path.name}"
+
+    raise ValueError(
+        "link not related to a symlink or parent of a symlink in dotfile repo"
+    )
+
+
 @cli.command("add")
 @_click.argument("file")
 @_help_option
@@ -217,10 +242,10 @@ def __add(obj: Object, file: str) -> None:
     _add(config, console, file)
     if is_link:
         _Path(file).unlink()
-        _link(link=file, target=original_link)
+        _link(config, console, link=file, target=original_link)
 
 
-@cli.command("link", help=_link.__doc__)
+@cli.command("link")
 @_help_option
 @_click.argument("link")
 @_click.argument("target")
@@ -228,13 +253,27 @@ def __add(obj: Object, file: str) -> None:
 @_decorators.install(quiet=True)
 @_click.pass_obj
 def __link(obj: Object, link: str, target: str) -> None:
+    """Create a new LINK from TARGET.
+
+    Create a symlink to an existing linked dotfile, reproducible with a
+    dotfile installation. This is useful for shared configs.
+
+    This will fail if the target is not a dotfile symlink or a child of
+    a dotfile symlink.
+
+    The target needs to be a link to a checked in file or dir, or a
+    versioned descendant of a linked dir. Any other files or dirs cannot
+    be installed, and the state reproduced, on a clean system.
+
+    Changes will be committed.
+    """
     config = obj["config"]
     console = obj["console"]
     try:
-        _link(link, target)
+        _link(config, console, link, target)
     except ValueError:
         _add(config, console, target)
-        _link(link, target)
+        _link(config, console, link, target)
 
 
 @cli.command("remove")

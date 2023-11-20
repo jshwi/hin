@@ -407,13 +407,13 @@ colorama = {version = "*", markers = "platform_system == \"Windows\""}
 
 [[package]]
 name = "click-help-colors"
-version = "0.9.3"
+version = "0.9.4"
 description = "Colorization of help messages in Click"
 optional = false
 python-versions = "*"
 files = [
-    {file = "click-help-colors-0.9.3.tar.gz", hash = "sha256:463a848936c84549597767e24bc56166fee4b3ac2da33c5ac79562dc1402d46c"},
-    {file = "click_help_colors-0.9.3-py3-none-any.whl", hash = "sha256:c0732b17dc637dc8fbb52574349670c186ffbb84f23cb68d173e68c193145a79"},
+    {file = "click-help-colors-0.9.4.tar.gz", hash = "sha256:f4cabe52cf550299b8888f4f2ee4c5f359ac27e33bcfe4d61db47785a5cc936c"},
+    {file = "click_help_colors-0.9.4-py3-none-any.whl", hash = "sha256:b33c5803eeaeb084393b1ab5899dc5476c7196b87a18713045afe76f840b42db"},
 ]
 
 [package.dependencies]

@@ -754,13 +754,13 @@ dev = ["build", "pre-commit", "pytest", "pytest-cov", "twine"]
 
 [[package]]
 name = "freezegun"
-version = "1.3.1"
+version = "1.4.0"
 description = "Let your Python tests travel through time"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "freezegun-1.3.1-py3-none-any.whl", hash = "sha256:065e77a12624d05531afa87ade12a0b9bdb53495c4573893252a055b545ce3ea"},
-    {file = "freezegun-1.3.1.tar.gz", hash = "sha256:48984397b3b58ef5dfc645d6a304b0060f612bcecfdaaf45ce8aff0077a6cb6a"},
+    {file = "freezegun-1.4.0-py3-none-any.whl", hash = "sha256:55e0fc3c84ebf0a96a5aa23ff8b53d70246479e9a68863f1fcac5a3e52f19dd6"},
+    {file = "freezegun-1.4.0.tar.gz", hash = "sha256:10939b0ba0ff5adaecf3b06a5c2f73071d9678e507c5eaedb23c761d56ac774b"},
 ]
 
 [package.dependencies]
@@ -2527,4 +2527,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "225dda1f951c9377872e71a783985077c24e81a82e1f910395c7bc0cf5828366"
+content-hash = "b2e2039cfbb93bc84d9ae96ea650b1d14ed6088a11a1ea4f339e45fbac00d633"

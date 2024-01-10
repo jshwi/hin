@@ -103,6 +103,7 @@ hin = "hin.__main__:main"
 audit = [
   "commit-policy",
   "const",
+  "copyright-year",
   "format",
   "format-docs",
   "format-str",

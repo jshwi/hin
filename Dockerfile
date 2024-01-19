@@ -1,4 +1,4 @@
-FROM python:3.12-alpine AS playground
+FROM python:3.13.0a3-alpine AS playground
 ENV USER=hin VENV=/opt/venv PATH=$VENV/bin:$PATH
 WORKDIR /home/$USER
 COPY ./hin /opt/hin/hin

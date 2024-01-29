@@ -2,6 +2,7 @@
 hin._actions
 ============
 """
+
 from __future__ import annotations
 
 import json as _json

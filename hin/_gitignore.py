@@ -2,6 +2,7 @@
 hin._gitignore
 ==============
 """
+
 from __future__ import annotations
 
 from pathlib import Path as _Path

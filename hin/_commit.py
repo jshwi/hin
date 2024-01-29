@@ -2,6 +2,7 @@
 hin._commit
 ===========
 """
+
 from __future__ import annotations
 
 import git as _git

@@ -81,7 +81,7 @@ rich = "^13.3.5"
 
 [tool.poetry.dev-dependencies]
 bump2version = "^1.0.1"
-deptry = "^0.12.0"
+deptry = "^0.13.0"
 freezegun = "^1.4.0"
 pre-commit = "^3.5.0"
 pyaud = "^7.5.0"

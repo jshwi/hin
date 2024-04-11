@@ -2,6 +2,7 @@
 hin._decorators
 ===============
 """
+
 from __future__ import annotations
 
 import functools as _functools

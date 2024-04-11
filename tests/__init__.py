@@ -4,6 +4,7 @@ tests
 
 Test package for ``hin``.
 """
+
 # pylint: disable=too-many-arguments
 from __future__ import annotations
 

@@ -4,6 +4,7 @@ hin.__main__
 
 Module entry point.
 """
+
 import sys as _sys
 
 from hin import main

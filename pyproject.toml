@@ -90,7 +90,7 @@ pytest-sugar = "^1.0.0"
 pytest-xdist = "^3.6.1"
 restview = "^3.0.0"
 sphinx-click = "^6.0.0"
-sphinx-immaterial = "0.11.11"
+sphinx-immaterial = "0.11.12"
 sphinx-toolbox = "^3.5.0"
 templatest = "^0.10.1"
 

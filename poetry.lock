@@ -2192,13 +2192,13 @@ testing = ["bs4", "coverage", "pygments", "pytest (>=7.1,<8)", "pytest-cov", "py
 
 [[package]]
 name = "sphinx-toolbox"
-version = "3.5.0"
+version = "3.6.0"
 description = "Box of handy tools for Sphinx 🧰 📔"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "sphinx_toolbox-3.5.0-py3-none-any.whl", hash = "sha256:20dfd3566717db6f2da7a400a54dc4b946f064fb31250fa44802d54cfb9b8a03"},
-    {file = "sphinx_toolbox-3.5.0.tar.gz", hash = "sha256:e5b5a7153f1997572d71a06aaf6cec225483492ec2c60097a84f15aad6df18b7"},
+    {file = "sphinx_toolbox-3.6.0-py3-none-any.whl", hash = "sha256:33db016958e29bf727fb416b1f17375635b4dfeef2b521e86dfa9b351c068e9d"},
+    {file = "sphinx_toolbox-3.6.0.tar.gz", hash = "sha256:4a124a9fca1d0ad881e57130f38c785196648ba6fd4fa672cffaf4127df954db"},
 ]
 
 [package.dependencies]
@@ -2624,4 +2624,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "ade58739acf70a03d5bfde15b373f332b11aed6e82584a2520d054c8356d4249"
+content-hash = "ba81dca16e455b37f6a0180a066b31873f67daba62d62bd1bf4be2e03389d3b7"

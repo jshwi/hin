@@ -2098,13 +2098,13 @@ sphinx = ">=4.0"
 
 [[package]]
 name = "sphinx-immaterial"
-version = "0.11.11"
+version = "0.11.13"
 description = "Adaptation of mkdocs-material theme for the Sphinx documentation system"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "sphinx_immaterial-0.11.11-py3-none-any.whl", hash = "sha256:174c7ce0f39c87413af0fbff17d0821e2f1fbae0d578b7074c9a6e17f1ef295c"},
-    {file = "sphinx_immaterial-0.11.11.tar.gz", hash = "sha256:f98f3019cbb1d77b259c7ab09dc977ca220dff931dd0f2fabee76e9f9c77b3b4"},
+    {file = "sphinx_immaterial-0.11.13-py3-none-any.whl", hash = "sha256:2feb80dbec584094787d00b3fc22c21f75a6e1fe489a7b06c3ff04228f946e13"},
+    {file = "sphinx_immaterial-0.11.13.tar.gz", hash = "sha256:c91598d09aedb6e16b49a47a8cce36359e728dc72943d23ed7cd897d12b5ae67"},
 ]
 
 [package.dependencies]
@@ -2118,7 +2118,7 @@ typing-extensions = "*"
 
 [package.extras]
 clang-format = ["clang-format"]
-cpp = ["libclang"]
+cpp = ["libclang", "libclang (<17)"]
 json = ["pyyaml"]
 jsonschema-validation = ["jsonschema"]
 keys = ["pymdown-extensions"]
@@ -2624,4 +2624,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "ade58739acf70a03d5bfde15b373f332b11aed6e82584a2520d054c8356d4249"
+content-hash = "e0eba767ebe168d8b66cfaaf90332fc644cbfbc57cb81193a340be6fe5d4338f"

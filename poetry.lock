@@ -1427,8 +1427,8 @@ files = [
 annotated-types = ">=0.4.0"
 pydantic-core = "2.20.1"
 typing-extensions = [
-    {version = ">=4.6.1", markers = "python_version < \"3.13\""},
     {version = ">=4.12.2", markers = "python_version >= \"3.13\""},
+    {version = ">=4.6.1", markers = "python_version < \"3.13\""},
 ]
 
 [package.extras]
@@ -1603,8 +1603,8 @@ files = [
 astroid = ">=3.2.4,<=3.3.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = [
-    {version = ">=0.2", markers = "python_version < \"3.11\""},
     {version = ">=0.3.7", markers = "python_version >= \"3.12\""},
+    {version = ">=0.2", markers = "python_version < \"3.11\""},
     {version = ">=0.3.6", markers = "python_version >= \"3.11\" and python_version < \"3.12\""},
 ]
 isort = ">=4.2.5,<5.13.0 || >5.13.0,<6"
@@ -2095,13 +2095,13 @@ sphinx = ">=2.0"
 
 [[package]]
 name = "sphinx-immaterial"
-version = "0.11.11"
+version = "0.11.14"
 description = "Adaptation of mkdocs-material theme for the Sphinx documentation system"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "sphinx_immaterial-0.11.11-py3-none-any.whl", hash = "sha256:174c7ce0f39c87413af0fbff17d0821e2f1fbae0d578b7074c9a6e17f1ef295c"},
-    {file = "sphinx_immaterial-0.11.11.tar.gz", hash = "sha256:f98f3019cbb1d77b259c7ab09dc977ca220dff931dd0f2fabee76e9f9c77b3b4"},
+    {file = "sphinx_immaterial-0.11.14-py3-none-any.whl", hash = "sha256:dd1a30614c8ecaa931155189e7d54f211232e31cf3e5c6d28ba9f04a4817f0a3"},
+    {file = "sphinx_immaterial-0.11.14.tar.gz", hash = "sha256:e1e8ba93c78a3e007743fede01a3be43f5ae97c5cc19b8e2a4d2aa058abead61"},
 ]
 
 [package.dependencies]
@@ -2551,4 +2551,4 @@ test = ["big-O", "importlib-resources", "jaraco.functools", "jaraco.itertools", 
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.8"
-content-hash = "9707291cfc8dcf6f7a5be0e040499d95ec0492429e74528de599bd5d44fdc00b"
+content-hash = "4375f0fb5567f48dc56f70cb6b565b071f8d55174e8aee02f43350f347a06fac"
